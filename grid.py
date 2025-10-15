@@ -28,6 +28,35 @@ def print_grid(grid):
             grid_row += f" {str(grid[i][j])}"
         print(grid_row)
 
+def calc_dist(width, height, bomb_grid):
+    dist_grid = [[0 for x in range(width)] for y in range(height)]
+    for y in range(len(bomb_grid)):
+        for x in range(len(bomb_grid[y])):
+            if bomb_grid[y][x] == 1:
+                dist_grid[y][x] += 9
+            elif y == 0:
+                if x == 0:
+                    dist_grid[y][x] += (bomb_grid[y][x+1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
+                elif x == width - 1:
+                    dist_grid[y][x] += (bomb_grid[y][x-1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x])
+                else:
+                    dist_grid[y][x] += (bomb_grid[y][x-1] + bomb_grid[y][x+1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
+            elif y == height - 1:
+                if x == 0:
+                    dist_grid[y][x] += (bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x+1])
+                elif x == width - 1:
+                    dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y][x-1])
+                else:
+                    dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x-1] + bomb_grid[y][x+1])
+            elif x == 0:
+                dist_grid[y][x] += (bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x+1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
+            elif x == width - 1:
+                dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y][x-1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x])
+            else:
+                print(f"{y=}, {x=}")
+                dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x-1] + bomb_grid[y][x+1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
+
+    return dist_grid
 
 def main():
     # defaults
@@ -38,10 +67,12 @@ def main():
     base_grid = [[0 for x in range(board_width)] for y in range(board_height)]
 
     bomb_grid = bomb_placement(board_width, board_height, number_of_bombs)
+    dist_grid = calc_dist(board_width, board_height, bomb_grid)
 
     # print(bombs)
     # print(bomb_grid)
     print_grid(bomb_grid)
+    print_grid(dist_grid)
 
 if __name__ == "__main__":
     main()
