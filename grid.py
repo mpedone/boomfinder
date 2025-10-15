@@ -5,38 +5,43 @@ How to get the bombs in place? Ten arrays of ten integers?
 '''
 import random
 
-def bomb_placement(board):
-    bomb_count = 10
-    bomb_locs = []
-    for i in range(bomb_count):
-        loc = random.choice(board)
-        bomb_locs.append(loc) 
-        board.pop(board.index(loc))
-    return bomb_locs
+def bomb_placement(width, height, bomb_count):
+    game_board_x = list(range(width))
+    game_board_y = list(range(height))
+    board = [(x, y) for x in game_board_x for y in game_board_y]
 
-def print_grid():
+    bombs = random.sample(board, bomb_count)
+    bomb_grid = [[0 for x in range(width)] for y in range(height)]
+    for bomb in bombs:
+        bomb_grid[bomb[0]][bomb[1]] = 1
+    return bomb_grid
+
+def print_grid(grid):
     print("   1 2 3 4 5 6 7 8 9 10")
-    print(" 1 . . . . . . . . . .")
-    print(" 2 . . . . . . . . . .")
-    print(" 3 . . . . . . . . . .")
-    print(" 4 . . . . . . . . . .")
-    print(" 5 . . . . . . . . . .")
-    print(" 6 . . . . . . . . . .")
-    print(" 7 . . . . . . . . . .")
-    print(" 8 . . . . . . . . . .")
-    print(" 9 . . . . . . . . . .")
-    print("10 . . . . . . . . . .")
-
+    for i in range(len(grid)):
+        grid_row = ""
+        if i < 9:
+            grid_row = " "
+        idx = i+1
+        grid_row += str(idx)
+        for j in range(len(grid[i])):
+            grid_row += f" {str(grid[i][j])}"
+        print(grid_row)
 
 
 def main():
-    game_board_x = list(range(10))
-    game_board_y = list(range(10))
+    # defaults
+    board_width = 10
+    board_height = 10
+    number_of_bombs = 10
 
-    game_board = [(x, y) for x in game_board_x for y in game_board_y]
-    bombs = bomb_placement(game_board)
-    print_grid()
-    print(bombs)
+    base_grid = [[0 for x in range(board_width)] for y in range(board_height)]
+
+    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs)
+
+    # print(bombs)
+    # print(bomb_grid)
+    print_grid(bomb_grid)
 
 if __name__ == "__main__":
     main()
