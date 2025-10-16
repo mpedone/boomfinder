@@ -64,6 +64,15 @@ def calc_dist(width, height, bomb_grid):
 
     return dist_grid
 
+def update_grid(base_grid, dist_grid, user_x, user_y):
+    if dist_grid[user_y][user_x] == 9:
+        print_grid(dist_grid)
+        print("You hit a BOOM! Game over!")
+    else:
+        base_grid[user_y][user_x] = dist_grid[user_y][user_x]
+        print_grid(base_grid)
+    return base_grid
+
 def main():
     # defaults
     board_width = 9
@@ -83,7 +92,12 @@ def main():
     # print(bombs)
     # print(bomb_grid)
     # print_grid(bomb_grid)
-    print_grid(base_grid)
+    # print_grid(base_grid)
+    base_grid = update_grid(base_grid, dist_grid, 0, 1)
+    base_grid = update_grid(base_grid, dist_grid, 0, 2)
+    base_grid = update_grid(base_grid, dist_grid, 0, 3)
+    base_grid = update_grid(base_grid, dist_grid, 0, 4)
+    base_grid = update_grid(base_grid, dist_grid, 0, 5)
 
 if __name__ == "__main__":
     main()
