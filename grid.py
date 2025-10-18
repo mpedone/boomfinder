@@ -5,10 +5,13 @@ How to get the bombs in place? Ten arrays of ten integers?
 '''
 import random
 
-def bomb_placement(width, height, bomb_count):
+def bomb_placement(width, height, bomb_count, row, col):
     game_board_x = list(range(width))
     game_board_y = list(range(height))
     board = [(x, y) for x in game_board_x for y in game_board_y]
+    selection = board.index((row, col))
+    sel = board.pop(selection)
+    print(sel)
 
     bombs = random.sample(board, bomb_count)
     # print(bombs)
@@ -36,68 +39,73 @@ def print_grid(grid):
         print(grid_row)
 
 def calc_dist(width, height, bomb_grid):
-    dist_grid = [[0 for x in range(width)] for y in range(height)]
-    for y in range(len(bomb_grid)):
-        for x in range(len(bomb_grid[y])):
-            if bomb_grid[y][x] == 1:
-                dist_grid[y][x] += 9
-            elif y == 0:
-                if x == 0:
-                    dist_grid[y][x] += (bomb_grid[y][x+1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
-                elif x == width - 1:
-                    dist_grid[y][x] += (bomb_grid[y][x-1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x])
+    dist_grid = [[0 for _ in range(width)] for _ in range(height)]
+    for row in range(len(bomb_grid)):
+        for col in range(len(bomb_grid[row])):
+            if bomb_grid[row][col] == 1:
+                dist_grid[row][col] += 9
+            elif row == 0:
+                if col == 0:
+                    dist_grid[row][col] += (bomb_grid[row][col+1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+                elif col == width - 1:
+                    dist_grid[row][col] += (bomb_grid[row][col-1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col])
                 else:
-                    dist_grid[y][x] += (bomb_grid[y][x-1] + bomb_grid[y][x+1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
-            elif y == height - 1:
-                if x == 0:
-                    dist_grid[y][x] += (bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x+1])
-                elif x == width - 1:
-                    dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y][x-1])
+                    dist_grid[row][col] += (bomb_grid[row][col-1] + bomb_grid[row][col+1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+            elif row == height - 1:
+                if col == 0:
+                    dist_grid[row][col] += (bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col+1])
+                elif col == width - 1:
+                    dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row][col-1])
                 else:
-                    dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x-1] + bomb_grid[y][x+1])
-            elif x == 0:
-                dist_grid[y][x] += (bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x+1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
-            elif x == width - 1:
-                dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y][x-1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x])
+                    dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col-1] + bomb_grid[row][col+1])
+            elif col == 0:
+                dist_grid[row][col] += (bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col+1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+            elif col == width - 1:
+                dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row][col-1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col])
             else:
-                dist_grid[y][x] += (bomb_grid[y-1][x-1] + bomb_grid[y-1][x] + bomb_grid[y-1][x+1] + bomb_grid[y][x-1] + bomb_grid[y][x+1] + bomb_grid[y+1][x-1] + bomb_grid[y+1][x] + bomb_grid[y+1][x+1])
+                dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col-1] + bomb_grid[row][col+1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+            if dist_grid[row][col] == 0:
+                dist_grid[row][col] = " "
+            elif dist_grid[row][col] == 9:
+                dist_grid[row][col] = "*"
 
     return dist_grid
 
-def update_grid(base_grid, dist_grid, user_x, user_y):
-    if dist_grid[user_y][user_x] == 9:
+def update_grid(base_grid, dist_grid, user_row, user_col):
+    if dist_grid[user_row][user_col] == "*":
         print_grid(dist_grid)
         print("You hit a BOOM! Game over!")
     else:
-        base_grid[user_y][user_x] = dist_grid[user_y][user_x]
+        base_grid[user_row][user_col] = dist_grid[user_row][user_col]
         print_grid(base_grid)
     return base_grid
 
 def main():
     # defaults
-    board_width = 9
-    board_height = 9
-    number_of_bombs = 10
+    board_width = 10
+    board_height = 10
+    number_of_bombs = 99
     """
     If we want to dynamically change the number of bombs, we can use an equation (rounded, of course): 
     
     bombs = (0.00708274 * AREA^1.53966) + 3.85371
     """
 
-    base_grid = [['.' for x in range(board_width)] for y in range(board_height)]
+    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
-    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs)
-    dist_grid = calc_dist(board_width, board_height, bomb_grid)
+    
+    
 
     # print(bombs)
     # print(bomb_grid)
     # print_grid(bomb_grid)
-    # print_grid(base_grid)
-    base_grid = update_grid(base_grid, dist_grid, 0, 1)
-    base_grid = update_grid(base_grid, dist_grid, 0, 2)
-    base_grid = update_grid(base_grid, dist_grid, 0, 3)
-    base_grid = update_grid(base_grid, dist_grid, 0, 4)
-    base_grid = update_grid(base_grid, dist_grid, 0, 5)
+    print_grid(base_grid)
+    # print_grid(dist_grid)
+    player_row = int(input("Select a row: "))-1
+    player_col = int(input("Select a column:"))-1
+    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+    dist_grid = calc_dist(board_width, board_height, bomb_grid)
+    base_grid = update_grid(base_grid, dist_grid, player_row, player_col)
 
 if __name__ == "__main__":
     main()
