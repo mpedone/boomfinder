@@ -86,9 +86,9 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
 
 def main():
     # defaults
-    board_width = 3
-    board_height = 3
-    number_of_bombs = 1
+    board_width = 6
+    board_height = 6
+    number_of_bombs = 5
     number_of_safes = board_width * board_height - number_of_bombs
     """
     If we want to dynamically change the number of bombs, we can use an equation (rounded, of course): 
@@ -111,12 +111,12 @@ def main():
             player_col = int(input("Select a column:"))-1
             move = (player_row, player_col)
             bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-            print_grid(bomb_grid)
+            # print_grid(bomb_grid)
             dist_grid = calc_dist(board_width, board_height, bomb_grid)
 
         while move in moves:
-            print(moves)
-            print(move)
+            # print(moves)
+            # print(move)
             print("Square already selected. Please select again.")
             player_row = int(input("Select a row: "))-1
             player_col = int(input("Select a column:"))-1
