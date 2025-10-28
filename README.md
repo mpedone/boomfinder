@@ -42,6 +42,8 @@ Change those as you see fit.
 ## To Come
 My next goal is to give the player the option to set the grid as they see fit, instead of having to edit the code.
 
+At some point, I need to clean up all the code, organize it better, and create a shell script to simplify running.
+
 After that, more information about game progress.
 
 A way to flag spaces that (the player thinks) have bombs, and have them not be selectable.
