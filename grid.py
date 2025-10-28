@@ -72,19 +72,24 @@ def calc_dist(width, height, bomb_grid):
     return dist_grid
 
 def update_grid(base_grid, dist_grid, user_row, user_col):
+    status = 1
     if dist_grid[user_row][user_col] == "*":
         print_grid(dist_grid)
+        # base_grid[user_row][user_col] = dist_grid[user_row][user_col]
+        # print_grid(base_grid)
         print("You hit a BOOM! Game over!")
+        status = 0
     else:
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
         print_grid(base_grid)
-    return base_grid
+    return base_grid, status
 
 def main():
     # defaults
-    board_width = 10
-    board_height = 10
-    number_of_bombs = 99
+    board_width = 3
+    board_height = 3
+    number_of_bombs = 1
+    number_of_safes = board_width * board_height - number_of_bombs
     """
     If we want to dynamically change the number of bombs, we can use an equation (rounded, of course): 
     
@@ -93,19 +98,82 @@ def main():
 
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
+    moves = [] # list of player moves
+    print_grid(base_grid)
+    status = 1
+    continue_game = 1
+
     
+
+    while continue_game == 1:
+        if len(moves) < 1:
+            player_row = int(input("Select a row: "))-1
+            player_col = int(input("Select a column:"))-1
+            move = (player_row, player_col)
+            bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+            print_grid(bomb_grid)
+            dist_grid = calc_dist(board_width, board_height, bomb_grid)
+
+        while move in moves:
+            print(moves)
+            print(move)
+            print("Square already selected. Please select again.")
+            player_row = int(input("Select a row: "))-1
+            player_col = int(input("Select a column:"))-1
+            move = (player_row, player_col)
+        moves.append(move)
+        base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+        
+
+
+        if status == 1:
+            if len(moves) == number_of_safes:
+                print("All spaces cleared! You win!")
+                cont = input("Would you like to play again?").lower()
+                if cont == "n" or cont == "no":
+                    continue_game = 0
+                else:
+                    moves = []
+                    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+                    print_grid(base_grid)
+                    # player_row = int(input("Select a row: "))-1
+                    # player_col = int(input("Select a column:"))-1
+                    # move = (player_row, player_col)
+                    # moves.append(move)
+                    # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+            else:
+                player_row = int(input("Select a row: "))-1
+                player_col = int(input("Select a column:"))-1
+                move = (player_row, player_col)
+                # moves.append(move)
+        if status == 0:
+            cont = input("Would you like to play again?").lower()
+            if cont == "n" or cont == "no":
+                continue_game = 0
+            else:
+                status == 1
+                moves = []
+                base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+                print_grid(base_grid)
+                # player_row = int(input("Select a row: "))-1
+                # player_col = int(input("Select a column:"))-1
+                # move = (player_row, player_col)
+                # moves.append(move)
+                # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+                # dist_grid = calc_dist(board_width, board_height, bomb_grid)
+            
+        
+
     
 
     # print(bombs)
     # print(bomb_grid)
     # print_grid(bomb_grid)
-    print_grid(base_grid)
+    # print_grid(base_grid)
     # print_grid(dist_grid)
-    player_row = int(input("Select a row: "))-1
-    player_col = int(input("Select a column:"))-1
-    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-    dist_grid = calc_dist(board_width, board_height, bomb_grid)
-    base_grid = update_grid(base_grid, dist_grid, player_row, player_col)
+
+    
+    
 
 if __name__ == "__main__":
     main()
