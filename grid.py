@@ -11,17 +11,14 @@ def bomb_placement(width, height, bomb_count, row, col):
     board = [(x, y) for x in game_board_x for y in game_board_y]
     selection = board.index((row, col))
     sel = board.pop(selection)
-    print(sel)
 
     bombs = random.sample(board, bomb_count)
-    # print(bombs)
     bomb_grid = [[0 for x in range(width)] for y in range(height)]
     for bomb in bombs:
         bomb_grid[bomb[1]][bomb[0]] = 1
     return bomb_grid
 
 def print_grid(grid):
-    # print("   1 2 3 4 5 6 7 8 9 10")
     width = len(grid[0])
     first_row_numbers = list(range(width))
     first_row = "   "
@@ -75,14 +72,15 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
     status = 1
     if dist_grid[user_row][user_col] == "*":
         print_grid(dist_grid)
-        # base_grid[user_row][user_col] = dist_grid[user_row][user_col]
-        # print_grid(base_grid)
         print("You hit a BOOM! Game over!")
         status = 0
     else:
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
         print_grid(base_grid)
     return base_grid, status
+
+def validate_input(entry, type):
+    pass
 
 def main():
     # defaults
@@ -95,6 +93,11 @@ def main():
     
     bombs = (0.00708274 * AREA^1.53966) + 3.85371
     """
+    print("Let's Find Some BOOMS!")
+    board_width = int(input("Set the board height: "))
+    board_height = int(input("Set the board width: "))
+    number_of_bombs = int(input("How many BOOMS? "))
+    number_of_safes = board_width * board_height - number_of_bombs
 
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
@@ -102,24 +105,20 @@ def main():
     print_grid(base_grid)
     status = 1
     continue_game = 1
-
     
 
     while continue_game == 1:
         if len(moves) < 1:
             player_row = int(input("Select a row: "))-1
-            player_col = int(input("Select a column:"))-1
+            player_col = int(input("Select a column: "))-1
             move = (player_row, player_col)
             bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-            # print_grid(bomb_grid)
             dist_grid = calc_dist(board_width, board_height, bomb_grid)
 
         while move in moves:
-            # print(moves)
-            # print(move)
             print("Square already selected. Please select again.")
             player_row = int(input("Select a row: "))-1
-            player_col = int(input("Select a column:"))-1
+            player_col = int(input("Select a column: "))-1
             move = (player_row, player_col)
         moves.append(move)
         base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
@@ -129,25 +128,19 @@ def main():
         if status == 1:
             if len(moves) == number_of_safes:
                 print("All spaces cleared! You win!")
-                cont = input("Would you like to play again?").lower()
+                cont = input("Would you like to play again? ").lower()
                 if cont == "n" or cont == "no":
                     continue_game = 0
                 else:
                     moves = []
                     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
                     print_grid(base_grid)
-                    # player_row = int(input("Select a row: "))-1
-                    # player_col = int(input("Select a column:"))-1
-                    # move = (player_row, player_col)
-                    # moves.append(move)
-                    # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
             else:
                 player_row = int(input("Select a row: "))-1
-                player_col = int(input("Select a column:"))-1
+                player_col = int(input("Select a column: "))-1
                 move = (player_row, player_col)
-                # moves.append(move)
         if status == 0:
-            cont = input("Would you like to play again?").lower()
+            cont = input("Would you like to play again? ").lower()
             if cont == "n" or cont == "no":
                 continue_game = 0
             else:
@@ -155,12 +148,6 @@ def main():
                 moves = []
                 base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
                 print_grid(base_grid)
-                # player_row = int(input("Select a row: "))-1
-                # player_col = int(input("Select a column:"))-1
-                # move = (player_row, player_col)
-                # moves.append(move)
-                # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-                # dist_grid = calc_dist(board_width, board_height, bomb_grid)
             
         
 
