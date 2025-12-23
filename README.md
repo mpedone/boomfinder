@@ -40,7 +40,7 @@ I've set the game to be a 6x6 grid with 5 bombs, as the CLI can be a little clun
 Change those as you see fit.
 
 ## To Come
-My next goal is to give the player the option to set the grid as they see fit, instead of having to edit the code.
+My next goal is to give the player the option to set the grid as they see fit, instead of having to edit the code. [done]
 
 At some point, I need to clean up all the code, organize it better, and create a shell script to simplify running.
 

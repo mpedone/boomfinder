@@ -86,17 +86,29 @@ def main():
     # defaults
     board_width = 6
     board_height = 6
-    number_of_bombs = 5
+    bombs_raw = (0.00708274 * (board_width * board_height)**1.53966) + 3.85371
+    number_of_bombs = int(bombs_raw)
     number_of_safes = board_width * board_height - number_of_bombs
-    """
-    If we want to dynamically change the number of bombs, we can use an equation (rounded, of course): 
     
-    bombs = (0.00708274 * AREA^1.53966) + 3.85371
-    """
     print("Let's Find Some BOOMS!")
-    board_width = int(input("Set the board height: "))
-    board_height = int(input("Set the board width: "))
-    number_of_bombs = int(input("How many BOOMS? "))
+    width_entry = input("Set the board width: ")
+    if not width_entry.isnumeric():
+        print("Invalid entry, using default")
+    else:
+        board_width = int(width_entry)    
+    height_entry = input("Set the board height: ")
+    if not height_entry.isnumeric():
+        print("Invalid entry, using default")
+    else:
+        board_height = int(height_entry)
+    bombs_entry = input("How many BOOMS? ")
+    if not bombs_entry.isnumeric():
+        print("BOOMS calculated automatically")
+    else:
+        number_of_bombs = int(bombs_entry)
+
+    
+    print(f"BOOMS to avoid: {number_of_bombs}")
     number_of_safes = board_width * board_height - number_of_bombs
 
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
