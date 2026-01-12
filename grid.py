@@ -4,6 +4,7 @@ In the simplest iteration, the game board will be a 10x10 grid of locations, rep
 How to get the bombs in place? Ten arrays of ten integers?
 '''
 import random
+import constants
 
 def bomb_placement(width, height, bomb_count, row, col):
     game_board_x = list(range(width))
@@ -89,8 +90,11 @@ def intialize_grid(board_width, board_height):
     if not width_entry.isnumeric():
         print("Invalid entry, using default")
     elif int(width_entry) < 3:
-        print("Grid too small, defaulting to 3")
+        print("Board too small, defaulting to 3")
         board_width = 3
+    elif int(width_entry) > constants.MAX_BOARD_WIDTH:
+        print(f"Board too wide, limiting to {constants.MAX_BOARD_WIDTH}.")
+        board_width = constants.MAX_BOARD_WIDTH
     else:
         board_width = int(width_entry)  
       
@@ -98,8 +102,11 @@ def intialize_grid(board_width, board_height):
     if not height_entry.isnumeric():
         print("Invalid entry, using default")
     elif int(height_entry) < 3:
-        print("Grid too small, defaulting to 3")
+        print("Board too small, defaulting to 3.")
         board_height = 3
+    elif int(height_entry) > constants.MAX_BOARD_HEIGHT:
+        print(f"Board too tall. Limiting to {constants.MAX_BOARD_HEIGHT}.")
+        board_height = constants.MAX_BOARD_HEIGHT
     else:
         board_height = int(height_entry)
 
@@ -108,6 +115,12 @@ def intialize_grid(board_width, board_height):
         print("BOOMS calculated automatically")
         bombs_raw = (0.00708274 * (board_width * board_height)**1.53966) + 3.85371
         number_of_bombs = int(bombs_raw)
+    elif int(bombs_entry) > (board_width * board_height) - 1:
+        print(f"Too many BOOMS! Limiting to {(board_width * board_height) - 1}")
+        number_of_bombs = (board_width * board_height) - 1
+    elif int(bombs_entry) < 0:
+        print("Too few BOOMS! Limiting to 1.")
+        number_of_bombs = 1
     else:
         number_of_bombs = int(bombs_entry)
     number_of_safes = board_width * board_height - number_of_bombs
