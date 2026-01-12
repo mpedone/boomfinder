@@ -82,6 +82,39 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
 def validate_input(entry, type):
     pass
 
+def intialize_grid(board_width, board_height):
+    print("Let's Find Some BOOMS!")
+
+    width_entry = input("Set the board width: ")
+    if not width_entry.isnumeric():
+        print("Invalid entry, using default")
+    elif int(width_entry) < 3:
+        print("Grid too small, defaulting to 3")
+        board_width = 3
+    else:
+        board_width = int(width_entry)  
+      
+    height_entry = input("Set the board height: ")
+    if not height_entry.isnumeric():
+        print("Invalid entry, using default")
+    elif int(height_entry) < 3:
+        print("Grid too small, defaulting to 3")
+        board_height = 3
+    else:
+        board_height = int(height_entry)
+
+    bombs_entry = input("How many BOOMS? ")
+    if not bombs_entry.isnumeric():
+        print("BOOMS calculated automatically")
+        bombs_raw = (0.00708274 * (board_width * board_height)**1.53966) + 3.85371
+        number_of_bombs = int(bombs_raw)
+    else:
+        number_of_bombs = int(bombs_entry)
+    number_of_safes = board_width * board_height - number_of_bombs
+    return board_width, board_height, number_of_bombs, number_of_safes
+
+    
+
 def main():
     # defaults
     board_width = 6
@@ -104,6 +137,8 @@ def main():
     bombs_entry = input("How many BOOMS? ")
     if not bombs_entry.isnumeric():
         print("BOOMS calculated automatically")
+        bombs_raw = (0.00708274 * (board_width * board_height)**1.53966) + 3.85371
+        number_of_bombs = int(bombs_raw)
     else:
         number_of_bombs = int(bombs_entry)
 
@@ -159,20 +194,7 @@ def main():
                 status == 1
                 moves = []
                 base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-                print_grid(base_grid)
-            
-        
-
-    
-
-    # print(bombs)
-    # print(bomb_grid)
-    # print_grid(bomb_grid)
-    # print_grid(base_grid)
-    # print_grid(dist_grid)
-
-    
-    
+                print_grid(base_grid)    
 
 if __name__ == "__main__":
     main()
