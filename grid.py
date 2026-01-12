@@ -40,6 +40,7 @@ def calc_dist(width, height, bomb_grid):
     dist_grid = [[0 for _ in range(width)] for _ in range(height)]
     for row in range(len(bomb_grid)):
         for col in range(len(bomb_grid[row])):
+            print(f"{row=}, {col=}")
             if bomb_grid[row][col] == 1:
                 dist_grid[row][col] += 9
             elif row == 0:
@@ -148,9 +149,9 @@ def first_move(row, col):
 
     As with all moves, this function needs to ensure the move is valid - numeric, within the constraints of the board, and unmarked. If any of these checks fail, it should ask for another selection.
 
-    As this is the first move, checking for a bomb is uneccesary. The function must, however call bomb_placement(), and then updated the game board with the distance to the closest bomb, if any.
+    As this is the first move, checking for a bomb is uneccesary. The function must, however call bomb_placement(), and then updated the game board with the number of bombs in adjacent squares, if any.
 
-    If the distance is zero, the square is blank. Any other blank squares touching this one should also be revealed. 
+    If the number is zero, the square is blank. Any other blank squares touching this one should also be revealed. 
 
     It is possible that clearing all consecutive blank squares could reveal all safe squares (usually for bigger grids with fewer bombs), so the function needs to check if the user has won.
     """
@@ -169,7 +170,7 @@ def other_move(row, col):
 
     This move also must check if the square is a bomb. If so, the game ends.
 
-    If it is not a bomb, it reveals the distance to the nearest bomb (if within 1 square). If the distance is zero, the square is blank. Any other blank squares touching this one should also be revealed.
+    If it is not a bomb, it reveals the number of bombs in the adjacent squares. If the distance is zero, the square is blank. Any other blank squares touching this one should also be revealed.
 
     It is possible that clearing all consecutive blank squares could reveal all safe squares (usually for bigger grids with fewer bombs), so the function needs to check if the user has won.
 
@@ -241,6 +242,19 @@ def validate_input(row, col, type):
     For clearing a region, function needs to validate the selection HAS been selected before and is not flagged.
 
     For marking a square, function needs to validate there are flags remaining, and that the selection has not been revealed already.
+    """
+    pass
+
+def auto_clear(row, col, base_grid, dist_grid):
+    """
+    Docstring for auto_clear
+    
+    :param row: Row selection
+    :param col: Column selection
+    :param base_grid: The game board to be displayed to player
+    :param dist_grid: The underlying grid that lists the number of bombs adjacent to current square
+
+    I think this might be a recursive function. It would be called if the distance of a revealed square is zero. It checks each adjacent square. If the adjacent square is zero, it checks each square adjacent to it.
     """
     pass
 
