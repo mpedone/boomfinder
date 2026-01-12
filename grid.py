@@ -77,9 +77,27 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
         print("You hit a BOOM! Game over!")
         status = 0
     else:
+        print(f"{user_row=}, {user_col=}")
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
         print_grid(base_grid)
     return base_grid, status
+
+def is_corner(row, col, width, height):
+    if row == 0 and col == 0:
+        return True
+    if row == 0 and col == width:
+        return True
+    if row == height and col == 0:
+        return True
+    if row == height and col == width:
+        return True
+    return False
+
+def is_edge(row, col, width, height):
+    if not is_corner(row, col, width, height):
+        if row == 0 or row == height or col == 0 or col == width:
+            return True
+    return False
 
 def intialize_grid(board_width, board_height):
     print("Let's Find Some BOOMS!")
@@ -212,7 +230,7 @@ def unmark_square(row, col):
     """
     pass
 
-def clear_region(row, col):
+def clear_region(row, col, base_grid, dist_grid):
     """
     Docstring for clear_region
     
@@ -225,7 +243,42 @@ def clear_region(row, col):
 
     This option should only appear after the first move.
     """
-    pass
+    height = len(base_grid)-1
+    width = len(base_grid[0])-1
+    row_range = range(-1, 2)
+    col_range = range(-1, 2)
+
+    if is_corner(row, col, height, width):
+        if row == 0 and col == 0:
+            row_range = range(0, 2)
+            col_range = range(0, 2)
+        if row == 0 and col == width:
+            row_range = range(0, 2)
+            col_range = range(-1,1)
+        if row == height and col == 0:
+            row_range = range(-1,1)
+            col_range = range(0, 2)
+        if row == height and col == width:
+            row_range = range(-1, 1)
+            col_range = range(-1, 1)
+    
+    if is_edge(row, col, height, width):
+        if row == 0:
+            row_range = range(0, 2)
+        if row == height:
+            row_range = range(-1, 1)
+        if col == 0:
+            col_range = range(0, 2)
+        if col == width:
+            col_range = range(-1, 1)
+    print(f"{width=}")
+    print(f"{height=}")
+    for r in row_range:
+        for c in col_range:
+            print(f"{row=}, {r=}, {row+r}, {col=}, {c=}, {col+c}")
+            if r == 0 and c == 0:
+                continue
+            update_grid(base_grid, dist_grid, row+r, col+c)
 
 def validate_input(row, col, type):
     """
@@ -254,7 +307,13 @@ def auto_clear(row, col, base_grid, dist_grid):
     :param base_grid: The game board to be displayed to player
     :param dist_grid: The underlying grid that lists the number of bombs adjacent to current square
 
-    I think this might be a recursive function. It would be called if the distance of a revealed square is zero. It checks each adjacent square. If the adjacent square is zero, it checks each square adjacent to it.
+    I think this might be a recursive function. It would be called if the number of bombs around a revealed square is zero. It checks each adjacent square. If the adjacent square is zero, it checks each square adjacent to it.
+
+    Function accpets the current row and column. 
+    
+    We know dist_grid[row][col] == 0, so we know that the surrounding squares can be revealed. I don't think it matters where this starts, but keeping it consistent will be important. I think we could start by revealing all of the squares, and then checking if any are 0; or we could start by revealing one square, and then checking if it is zero and calling this function again, until we get to a square that isn't zero and stepping back.
+
+    We would then call update_grid(row-1, col-1)
     """
     pass
 
@@ -310,7 +369,9 @@ def main():
             print("Square already selected. Please select again.")
             player_row = int(input("Select a row: "))-1
             player_col = int(input("Select a column: "))-1
+            # clear_region(player_row, player_col, base_grid, dist_grid)
             move = (player_row, player_col)
+        
         moves.append(move)
         base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
         
