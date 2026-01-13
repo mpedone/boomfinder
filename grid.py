@@ -255,7 +255,7 @@ def clear_region(row, col, base_grid, dist_grid):
     row_range = range(-1, 2)
     col_range = range(-1, 2)
     status = 1
-    loop = 0
+    tmp = 1
 
     if is_corner(row, col, height, width):
         if row == 0 and col == 0:
@@ -287,14 +287,11 @@ def clear_region(row, col, base_grid, dist_grid):
             # print(f"{row=}, {r=}, {row+r}, {col=}, {c=}, {col+c}")
             if r == 0 and c == 0:
                 continue
-            # update_grid(base_grid, dist_grid, row+r, col+c)
-            if dist_grid[row+r][col+c] == "*":
-                print_grid(dist_grid)
-                print("You hit a BOOM! Game over!")
-                status = 0
-            else:
-                base_grid[row+r][col+c] = dist_grid[row+r][col+c]
-                # print_grid(base_grid)
+            base_grid, status = update_grid(base_grid, dist_grid, row+r, col+c)
+            if status == 0:
+                tmp = 0
+    if tmp == 0:
+        status = 0
     return base_grid, status
 
 def validate_input(row, col, type, base_grid):
