@@ -80,8 +80,13 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
         # print_grid(dist_grid)
         print("You hit a BOOM! Game over!")
         status = 0
+    # elif dist_grid[user_row][user_col] == " ":
+    #     base_grid[user_row][user_col] = dist_grid[user_row][user_col]
+    #     auto_clear(user_row, user_col, base_grid, dist_grid)
     else:
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
+        # if base_grid[user_row][user_col] == " ":
+        #     auto_clear(user_row, user_col, base_grid, dist_grid)
     return base_grid, status
 
 def is_corner(row, col, width, height):
@@ -290,6 +295,8 @@ def clear_region(row, col, base_grid, dist_grid):
     if flags != expected_flags:
         print(f"Not enough flags. (found {flags}, expected {expected_flags})")
         return base_grid, status
+    
+    row_range, col_range = ranges(row, col, width, height)
 
     if is_corner(row, col, height, width):
         if row == 0 and col == 0:
@@ -438,8 +445,32 @@ def validate_input(row, col, type, base_grid):
         
         return res
 
-            
 def auto_clear(row, col, base_grid, dist_grid):
+    width = len(base_grid[0])-1
+    height = len(base_grid)-1
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    # while True:
+    for dir in directions:
+        new_row = row + dir[0]
+        new_col = col + dir[1]
+
+        if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+            continue
+        elif dist_grid[new_row][new_col] != " " and base_grid[new_row][new_col] != "F":
+            base_grid[new_row][new_col] = dist_grid[new_row][new_col]
+            break
+            # continue
+        else:
+            if base_grid[new_row][new_col] != "F":
+                update_grid(base_grid, dist_grid, new_row, new_col)
+                # base_grid[new_row][new_col] = dist_grid[new_row][new_col]
+                # if base_grid[new_row][new_col] != " ":
+                #     continue
+            # print(dir)
+            # base_grid[new_row][new_col] == " "
+            
+def auto_clear_dep(row, col, base_grid, dist_grid):
     """
     Docstring for auto_clear
     
@@ -455,8 +486,72 @@ def auto_clear(row, col, base_grid, dist_grid):
     We know dist_grid[row][col] == 0, so we know that the surrounding squares can be revealed. I don't think it matters where this starts, but keeping it consistent will be important. I think we could start by revealing all of the squares, and then checking if any are 0; or we could start by revealing one square, and then checking if it is zero and calling this function again, until we get to a square that isn't zero and stepping back.
 
     We would then call update_grid(row-1, col-1)
+
+    I am TERRIBLE at recursion. Ugh.
     """
-    pass
+    width = len(base_grid[0])-1
+    height = len(base_grid)-1
+    row_range, col_range = ranges(row, col, width, height)
+
+    if row == 0 or dist_grid[row][col] != " ":
+        return base_grid
+    else: 
+        update_grid(base_grid, dist_grid, row-1, col)
+    if row == height or dist_grid[row][col] != " ":
+        return base_grid
+    else:
+        update_grid(base_grid, dist_grid, row+1, col)
+    if col == 0 or dist_grid[row][col] != " ":
+        return base_grid
+    else:
+        update_grid(base_grid, dist_grid, row, col-1)
+    if col == width or dist_grid[row][col] != " ":
+        return base_grid
+    else:
+        update_grid(base_grid, dist_grid, row, col+1)
+    # else:
+        # print(f"{row_range=}, {col_range=}")
+        # for r in row_range:
+        #     for c in col_range:
+        #         update_grid(base_grid, dist_grid, row+r, col+c)
+        # update_grid(base_grid, dist_grid, row-1, col)
+    """ row_range, col_range = ranges(row, col, width, height)
+    for r in row_range:
+        for c in col_range:
+            if r == 0 and c == 0:
+                continue
+            if dist_grid[row+r][col+c] != " ":
+                base_grid[row+r][col+c] = dist_grid[row+r][col+c]
+                break
+            else:
+                update_grid(base_grid, dist_grid, row+r, col+c)
+                # base_grid[row+r][col+c] = dist_grid[row+r][col+c]
+                # auto_clear(base_grid, dist_grid, row+r, col+c) """
+
+def ranges(row, col, width, height):
+    row_range = range(-1, 2)
+    col_range = range(-1, 2)
+    if row == 0 and col == 0:
+        row_range = range(0, 2)
+        col_range = range(0, 2)
+    elif row == 0 and col == width:
+        row_range = range(0, 2)
+        col_range = range(-1,1)
+    elif row == height and col == 0:
+        row_range = range(-1,1)
+        col_range = range(0, 2)
+    elif row == height and col == width:
+        row_range = range(-1, 1)
+        col_range = range(-1, 1)
+    elif row == 0:
+        row_range = range(0, 2)
+    elif row == height:
+        row_range = range(-1, 1)
+    elif col == 0:
+        col_range = range(0, 2)
+    elif col == width:
+        col_range = range(-1, 1)
+    return row_range, col_range
 
 def grid_count(base_grid):
     sum = 0
@@ -550,8 +645,9 @@ def main():
                 player_row, player_col = int(row_input)-1, int(col_input)-1
                 # move = (player_row, player_col)
                 bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-                print_grid(bomb_grid)
+                # print_grid(bomb_grid)
                 dist_grid = calc_dist(board_width, board_height, bomb_grid)
+                print_grid(dist_grid)
                 # moves.append(move)
                 base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
                 moves += 1
