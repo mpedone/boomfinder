@@ -312,17 +312,24 @@ def validate_input(row, col, type, base_grid):
     """
     res = ""
     if type == "first_move":
-        if not row.isnumeric or int(row)-1 not in range(0, len(base_grid)):
+        if not row.isnumeric() or int(row)-1 not in range(0, len(base_grid)):
             res += f"Row must be a number between 1 and {len(base_grid)}. "
-        if not col.isnumeric or int(col)-1 not in range(0, len(base_grid[0])):
+        if not col.isnumeric() or int(col)-1 not in range(0, len(base_grid[0])):
             res += f"Column must be a number between 1 and {len(base_grid[0])}."
         return res
     
     if type == "other_move":
-        if not row.isnumeric or int(row)-1 not in [0, len(base_grid)]:
+        err = 0
+        if not row.isnumeric() or int(row)-1 not in range(0, len(base_grid)):
             res += f"Row must be a number between 1 and {len(base_grid)}. "
-        if not col.isnumeric or int(col)-1 not in [0, len(base_grid[0])]:
+            err += 1
+        if not col.isnumeric() or int(col)-1 not in range(0, len(base_grid[0])):
             res += f"Column must be a number between 1 and {len(base_grid[0])}."
+            err += 1
+        
+        if err != 0:
+            return res
+
         row = int(row) - 1
         col = int(col) - 1
         if base_grid[row][col] != "_":  # This will go away later
@@ -371,12 +378,12 @@ def main():
     print("Let's Find Some BOOMS!")
     width_entry = input("Set the board width: ")
     if not width_entry.isnumeric():
-        print("Invalid entry, using default")
+        print(f"Invalid entry, using default ({board_height})")
     else:
         board_width = int(width_entry)    
     height_entry = input("Set the board height: ")
     if not height_entry.isnumeric():
-        print("Invalid entry, using default")
+        print(f"Invalid entry, using default ({board_width})")
     else:
         board_height = int(height_entry)
     bombs_entry = input("How many BOOMS? ")
@@ -413,6 +420,7 @@ def main():
             valid_move = validate_input(row_input, col_input, "first_move", base_grid)
 
             while valid_move != "":
+                print(valid_move)
                 user_input = input("Select a square: ")
                 row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
                 valid_move = validate_input(row_input, col_input, "first_move", base_grid)
