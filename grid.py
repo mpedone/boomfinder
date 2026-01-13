@@ -81,6 +81,14 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
         # print_grid(base_grid)
     return base_grid, status
 
+# def endgame(status, dist_grid):
+#     if status == 0:
+#         print_grid(dist_grid)
+#         print("You hit a BOOM! Game over!")
+#     if status == 1:
+        
+
+
 def is_corner(row, col, width, height):
     if row == 0 and col == 0:
         return True
@@ -246,6 +254,8 @@ def clear_region(row, col, base_grid, dist_grid):
     width = len(base_grid[0])-1
     row_range = range(-1, 2)
     col_range = range(-1, 2)
+    status = 1
+    loop = 0
 
     if is_corner(row, col, height, width):
         if row == 0 and col == 0:
@@ -277,7 +287,15 @@ def clear_region(row, col, base_grid, dist_grid):
             # print(f"{row=}, {r=}, {row+r}, {col=}, {c=}, {col+c}")
             if r == 0 and c == 0:
                 continue
-            update_grid(base_grid, dist_grid, row+r, col+c)
+            # update_grid(base_grid, dist_grid, row+r, col+c)
+            if dist_grid[row+r][col+c] == "*":
+                print_grid(dist_grid)
+                print("You hit a BOOM! Game over!")
+                status = 0
+            else:
+                base_grid[row+r][col+c] = dist_grid[row+r][col+c]
+                # print_grid(base_grid)
+    return base_grid, status
 
 def validate_input(row, col, type, base_grid):
     """
@@ -297,9 +315,9 @@ def validate_input(row, col, type, base_grid):
     """
     res = ""
     if type == "first_move":
-        if not row.isnumeric or int(row)-1 not in [0, len(base_grid)]:
+        if not row.isnumeric or int(row)-1 not in range(0, len(base_grid)):
             res += f"Row must be a number between 1 and {len(base_grid)}. "
-        if not col.isnumeric or int(col)-1 not in [0, len(base_grid[0])]:
+        if not col.isnumeric or int(col)-1 not in range(0, len(base_grid[0])):
             res += f"Column must be a number between 1 and {len(base_grid[0])}."
         return res
     
@@ -310,7 +328,7 @@ def validate_input(row, col, type, base_grid):
             res += f"Column must be a number between 1 and {len(base_grid[0])}."
         row = int(row) - 1
         col = int(col) - 1
-        if base_grid[row][col] != "_":
+        if base_grid[row][col] != "_":  # This will go away later
             res = "clear"
         elif base_grid[row][col] == "F":
             res = "flagged"
@@ -336,6 +354,13 @@ def auto_clear(row, col, base_grid, dist_grid):
     We would then call update_grid(row-1, col-1)
     """
     pass
+
+def grid_count(base_grid):
+    sum = 0
+    for i in range(len(base_grid)):
+        sum += base_grid[i].count("_")
+        sum += base_grid[i].count("F")
+    return sum
 
 
 def main():
@@ -376,21 +401,20 @@ def main():
     status = 1
     continue_game = 1
     moves = 0
+    cleared = 0
 
     while continue_game == 1:
+        # if status == 1:
         print_grid(base_grid)
-        print(f"{moves=}")
+        # print(f"{status=}")
+        print(f"{cleared=}")
         user_input = input("Select a square: ")
         row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
 
         # if len(moves) < 1:
         if moves == 0:
-            # player_row = int(input("Select a row: "))-1
-            # player_col = int(input("Select a column: "))-1
-            # move = (player_row, player_col)
-            
             valid_move = validate_input(row_input, col_input, "first_move", base_grid)
-            print(f"first move {valid_move}")    
+
             while valid_move != "":
                 user_input = input("Select a square: ")
                 row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
@@ -398,76 +422,103 @@ def main():
             player_row, player_col = int(row_input)-1, int(col_input)-1
             # move = (player_row, player_col)
             bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+            # print_grid(bomb_grid)
             dist_grid = calc_dist(board_width, board_height, bomb_grid)
             # moves.append(move)
             base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
             moves += 1
         else:
-            if status == 1:
-                if moves == number_of_safes:
-                    print("All spaces cleared! You win!")
-                    cont = input("Would you like to play again? ").lower()
-                    if cont == "n" or cont == "no":
-                        continue_game = 0
-                    else:
-                        moves = 0
-                        base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-                        print_grid(base_grid)
+            valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+            while valid_move not in ["valid", "clear", "flagged"]:
+                print(valid_move)
+                user_input = input("Select a square: ")
+                row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+                valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+                
+            player_row, player_col = int(row_input)-1, int(col_input)-1
+
+            if valid_move == "clear":
+                base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
+                print(f"{status=}")
+                moves += 1
+            elif valid_move == "flagged":
+                pass
+            elif valid_move == "valid":
+                # move = {player_row, player_col}
+                # moves.append(move)
+                base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+                moves += 1
+            cleared = (board_width * board_height) - grid_count(base_grid)
+            
+            if cleared == number_of_safes and status == 1:
+                print_grid(base_grid)
+                print("All spaces cleared! You win!")
+                cont = input("Would you like to play again? ").lower()
+                if cont == "n" or cont == "no":
+                    continue_game = 0
                 else:
-                    valid_move = validate_input(row_input, col_input, "other_move", base_grid)
-                    while valid_move not in ["valid", "clear", "flagged"]:
-                        print(valid_move)
-                        user_input = input("Select a square: ")
-                        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-                        valid_move = validate_input(row_input, col_input, "other_move", base_grid)
-                        
-                    player_row, player_col = int(row_input)-1, int(col_input)-1
+                    moves = 0
+                    cleared = 0
+                    # status = 1
+                    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
-                    if valid_move == "clear":
-                        clear_region(player_row, player_col, base_grid, dist_grid)
-                        moves += 1
-                    elif valid_move == "flagged":
-                        pass
-                    elif valid_move == "valid":
-                        # move = {player_row, player_col}
-                        # moves.append(move)
-                        base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
-                        moves += 1
-
-        # while move in moves:
-        #     print("Square already selected. Please select again.")
-        #     player_row = int(input("Select a row: "))-1
-        #     player_col = int(input("Select a column: "))-1
-        #     # clear_region(player_row, player_col, base_grid, dist_grid)
-        #     move = (player_row, player_col)
-        
-        
-        
-
-
-        # if status == 1:
-        #     if len(moves) == number_of_safes:
-        #         print("All spaces cleared! You win!")
-        #         cont = input("Would you like to play again? ").lower()
-        #         if cont == "n" or cont == "no":
-        #             continue_game = 0
-        #         else:
-        #             moves = []
-        #             base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-        #             print_grid(base_grid)
+        # elif status == 2:
+        #     # if cleared == number_of_safes:
+        #     print_grid(base_grid)
+        #     print("All spaces cleared! You win!")
+        #     cont = input("Would you like to play again? ").lower()
+        #     if cont == "n" or cont == "no":
+        #         continue_game = 0
         #     else:
-        #         player_row = int(input("Select a row: "))-1
-        #         player_col = int(input("Select a column: "))-1
-        #         move = (player_row, player_col)
+        #         moves = 0
+        #         cleared = 0
+        #         status = 1
+        #         base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+        #         # print_grid(base_grid)
+        
         if status == 0:
-            cont = input("Would you like to play again? ").lower()
-            if cont == "n" or cont == "no":
-                continue_game = 0
+                cleared = 0
+                cont = input("Would you like to play again? ").lower()
+                if cont == "n" or cont == "no":
+                    continue_game = 0
+                else:
+                    status = 1
+                    moves = 0
+                    # cleared = 0
+                    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+
+        
+                # print_grid(base_grid)    
+    """      
+
+        while move in moves:
+            print("Square already selected. Please select again.")
+            player_row = int(input("Select a row: "))-1
+            player_col = int(input("Select a column: "))-1
+            # clear_region(player_row, player_col, base_grid, dist_grid)
+            move = (player_row, player_col)
+        
+        
+        
+
+
+        if status == 1:
+            if len(moves) == number_of_safes:
+                print("All spaces cleared! You win!")
+                cont = input("Would you like to play again? ").lower()
+                if cont == "n" or cont == "no":
+                    continue_game = 0
+                else:
+                    moves = []
+                    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+                    print_grid(base_grid)
             else:
-                status == 1
-                moves = []
-                base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-                print_grid(base_grid)    
+                player_row = int(input("Select a row: "))-1
+                player_col = int(input("Select a column: "))-1
+                move = (player_row, player_col)
+    """
+
+        
 
 if __name__ == "__main__":
     main()
