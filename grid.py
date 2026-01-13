@@ -72,22 +72,17 @@ def calc_dist(width, height, bomb_grid):
 
 def update_grid(base_grid, dist_grid, user_row, user_col):
     status = 1
-    if dist_grid[user_row][user_col] == "*":
-        print_grid(dist_grid)
+    if base_grid[user_row][user_col] == "F":
+        pass
+    elif dist_grid[user_row][user_col] == "*":
+        check_flags(base_grid, dist_grid)
+        print_grid(base_grid)
+        # print_grid(dist_grid)
         print("You hit a BOOM! Game over!")
         status = 0
     else:
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
-        # print_grid(base_grid)
     return base_grid, status
-
-# def endgame(status, dist_grid):
-#     if status == 0:
-#         print_grid(dist_grid)
-#         print("You hit a BOOM! Game over!")
-#     if status == 1:
-        
-
 
 def is_corner(row, col, width, height):
     if row == 0 and col == 0:
@@ -149,7 +144,7 @@ def intialize_grid(board_width, board_height):
     number_of_safes = board_width * board_height - number_of_bombs
     return board_width, board_height, number_of_bombs, number_of_safes
 
-def move_selection(choice):
+def move_selection(base_grid):
     """
     Docstring for move_selection
     
@@ -161,7 +156,20 @@ def move_selection(choice):
 
     clearing a region clears the (up to) 8 squares (three on corners, 5 on edges) around the selection. ONLY already cleared squares can be selected, unlike revealing a square. Consecutive empty squares should clear. Any bombs in the surrounding squares trigger a game over. Cannot be chosen as the first move.
     """
-    pass
+    selection = None
+    print("What type of move would you like to make?")
+    while selection not in ["r", "c", "f"]:
+        selection = input("Reveal (r), Clear (c), Flag/Unflag (f): ").lower()
+    match selection:
+        case "r":
+            pass
+        case "c":
+            pass
+        case "f":
+            base_grid = mark_square(base_grid)
+            
+        case _:
+            print("Look...")
 
 def first_move(row, col):
     """
@@ -203,7 +211,7 @@ def other_move(row, col):
     """
     pass
 
-def mark_square(row, col):
+def mark_square(base_grid, flags):
     """
     Docstring for mark_square
     
@@ -212,13 +220,30 @@ def mark_square(row, col):
 
     This function marks a square which the user suspects is a bomb. This does two things: first, it lowers the count of "bombs remaining to mark" (not yet implemented) by 1, and it "locks" the square. The user will not be able to clear it without unmarking it. Neither "reveal" nor "clear region" should reveal a marked square.
 
-    This function will need to check that the square is within the board, has not already been revealed, whehter it is flagged or not, and how many flags the user has remaining.
+    This function will need to check that the square is within the board, has not already been revealed, whehter it is flagged or not, and how many flags the user has remaining (though the classic game allows player to place as many as they'd like).
 
     If the selection has been marked, the marked should be removed and remaining flags increased by 1.
 
     Using all flags does not trigger an end game check. It just means a user can't place any more flags until they unmark a square. If all squares are marked, this option will only unmark a square.
     """
-    pass
+    # validate_input = "start"
+    user_input = input("Select a square: ")
+    row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+    valid_input = validate_input(row_input, col_input, "mark", base_grid)
+    while valid_input != "":
+        print(valid_input)
+        user_input = input("Select a square: ")
+        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        valid_input = validate_input(row_input, col_input, "mark", base_grid)
+
+    user_row, user_col = int(row_input)-1, int(col_input)-1
+    if base_grid[user_row][user_col] == "_":
+        base_grid[user_row][user_col] = "F"
+        flags -= 1
+    elif base_grid[user_row][user_col] == "F":
+        base_grid[user_row][user_col] = "_"
+        flags += 1
+    return flags
 
 def unmark_square(row, col):
     """
@@ -248,6 +273,8 @@ def clear_region(row, col, base_grid, dist_grid):
 
     Function will need to check that the selected square HAS been previously selected or if it is flagged (for messaging purposes). If this check passes, function will call a modified version of other_move(), in that the game won't ask for another input if the square has already been cleared or is flagged, it just ignores it.
 
+    Will also need to check that the correct number of squares have been flagged.
+
     This option should only appear after the first move.
     """
     height = len(base_grid)-1
@@ -256,6 +283,13 @@ def clear_region(row, col, base_grid, dist_grid):
     col_range = range(-1, 2)
     status = 1
     tmp = 1
+
+    flags = count_flags(row, col, base_grid)
+    expected_flags = 0 if base_grid[row][col] == " " else base_grid[row][col]
+
+    if flags != expected_flags:
+        print(f"Not enough flags. (found {flags}, expected {expected_flags})")
+        return base_grid, status
 
     if is_corner(row, col, height, width):
         if row == 0 and col == 0:
@@ -293,6 +327,10 @@ def clear_region(row, col, base_grid, dist_grid):
     if tmp == 0:
         status = 0
     return base_grid, status
+
+def count_flags(row, col, base_grid):
+    x = [base_grid[row-1][col-1], base_grid[row-1][col], base_grid[row-1][col+1], base_grid[row][col-1], base_grid[row][col+1], base_grid[row+1][col-1], base_grid[row+1][col], base_grid[row+1][col+1]]
+    return x.count("F")
 
 def validate_input(row, col, type, base_grid):
     """
@@ -332,13 +370,34 @@ def validate_input(row, col, type, base_grid):
 
         row = int(row) - 1
         col = int(col) - 1
-        if base_grid[row][col] != "_":  # This will go away later
-            res = "clear"
-        elif base_grid[row][col] == "F":
+        if base_grid[row][col] == "F":
             res = "flagged"
+        elif base_grid[row][col] != "_":  # This will go away later
+            res = "clear"
         else:
             res = "valid"
         return res
+    
+    if type == "mark":
+        err = 0
+        if not row.isnumeric() or int(row)-1 not in range(0, len(base_grid)):
+            res += f"Row must be a number between 1 and {len(base_grid)}. "
+            err += 1
+        if not col.isnumeric() or int(col)-1 not in range(0, len(base_grid[0])):
+            res += f"Column must be a number between 1 and {len(base_grid[0])}."
+            err += 1
+        
+        if err != 0:
+            return res
+        
+        row = int(row) - 1
+        col = int(col) - 1
+
+        if base_grid[row][col] != "_" and base_grid[row][col] != "F":
+            res = "Please select a square that has not been revealed."
+        
+        return res
+
             
 def auto_clear(row, col, base_grid, dist_grid):
     """
@@ -366,6 +425,16 @@ def grid_count(base_grid):
         sum += base_grid[i].count("F")
     return sum
 
+def check_flags(base_grid, dist_grid):
+    for r in range(len(base_grid)):
+        for c in range(len(base_grid[0])):
+            if base_grid[r][c] == "F" and dist_grid[r][c] != "*":
+                base_grid[r][c] = "x"
+            if base_grid[r][c] == "_" and dist_grid[r][c] == "*":
+                base_grid[r][c] = "*"
+    return base_grid
+
+
 
 def main():
     # defaults
@@ -375,7 +444,7 @@ def main():
     number_of_bombs = int(bombs_raw)
     number_of_safes = board_width * board_height - number_of_bombs
     
-    print("Let's Find Some BOOMS!")
+    """ print("Let's Find Some BOOMS!")
     width_entry = input("Set the board width: ")
     if not width_entry.isnumeric():
         print(f"Invalid entry, using default ({board_height})")
@@ -392,11 +461,11 @@ def main():
         bombs_raw = (0.00708274 * (board_width * board_height)**1.53966) + 3.85371
         number_of_bombs = int(bombs_raw)
     else:
-        number_of_bombs = int(bombs_entry)
+        number_of_bombs = int(bombs_entry) """
 
-    
+    board_width, board_height, number_of_bombs, number_of_safes = intialize_grid(board_width, board_height)
     print(f"BOOMS to avoid: {number_of_bombs}")
-    number_of_safes = board_width * board_height - number_of_bombs
+    # number_of_safes = board_width * board_height - number_of_bombs
 
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
@@ -406,56 +475,75 @@ def main():
     continue_game = 1
     moves = 0
     cleared = 0
+    flags = number_of_bombs
 
     while continue_game == 1:
         # if status == 1:
         print_grid(base_grid)
-        # print(f"{status=}")
         print(f"{cleared=}")
-        user_input = input("Select a square: ")
-        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        print(f"Flags remaining: {flags}")
 
-        # if len(moves) < 1:
-        if moves == 0:
-            valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+        # move_selection(base_grid)
+        # print_grid(base_grid)
+        # print(f"{status=}")
+        selection = None
+        print("What type of move would you like to make?")
+        while selection not in ["r", "c", "f"]:
+            selection = input("Reveal (r), Clear (c), Flag/Unflag (f): ").lower()
+        if selection == "f":
+            flags = mark_square(base_grid, flags)
+            # print_grid(base_grid)
+        
+        if selection == "r" or selection == "c":
+            user_input = input("Select a square: ")
+            row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
 
-            while valid_move != "":
-                print(valid_move)
-                user_input = input("Select a square: ")
-                row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+            # if len(moves) < 1:
+            if moves == 0:
                 valid_move = validate_input(row_input, col_input, "first_move", base_grid)
-            player_row, player_col = int(row_input)-1, int(col_input)-1
-            # move = (player_row, player_col)
-            bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-            # print_grid(bomb_grid)
-            dist_grid = calc_dist(board_width, board_height, bomb_grid)
-            # moves.append(move)
-            base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
-            moves += 1
-        else:
-            valid_move = validate_input(row_input, col_input, "other_move", base_grid)
-            while valid_move not in ["valid", "clear", "flagged"]:
-                print(valid_move)
-                user_input = input("Select a square: ")
-                row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-                valid_move = validate_input(row_input, col_input, "other_move", base_grid)
-                
-            player_row, player_col = int(row_input)-1, int(col_input)-1
 
-            if valid_move == "clear":
-                base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
-                print(f"{status=}")
-                moves += 1
-            elif valid_move == "flagged":
-                pass
-            elif valid_move == "valid":
-                # move = {player_row, player_col}
+                while valid_move != "":
+                    print(valid_move)
+                    user_input = input("Select a square: ")
+                    row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+                    valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+                player_row, player_col = int(row_input)-1, int(col_input)-1
+                # move = (player_row, player_col)
+                bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+                print_grid(bomb_grid)
+                dist_grid = calc_dist(board_width, board_height, bomb_grid)
                 # moves.append(move)
                 base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
                 moves += 1
-            cleared = (board_width * board_height) - grid_count(base_grid)
+                cleared = (board_width * board_height) - grid_count(base_grid)
+                # all_cleared_check()
+            else:
+                valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+                while valid_move not in ["valid", "clear", "flagged"]:
+                    print(valid_move)
+                    user_input = input("Select a square: ")
+                    row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+                    valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+                    
+                player_row, player_col = int(row_input)-1, int(col_input)-1
+
+                if valid_move == "clear":
+                    base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
+                    print(f"{status=}")
+                    moves += 1
+                elif valid_move == "flagged":
+                    print(f"({row_input}, {col_input}) is flagged, select again.")
+                elif valid_move == "valid":
+                    # move = {player_row, player_col}
+                    # moves.append(move)
+                    base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+                    moves += 1
+                cleared = (board_width * board_height) - grid_count(base_grid)
+                # if cleared == number_of_safes:
+                #     base_grid, status = check_flags(base_grid, bomb_grid)
             
             if cleared == number_of_safes and status == 1:
+                # base_grid, status = check_flags(base_grid, bomb_grid)
                 print_grid(base_grid)
                 print("All spaces cleared! You win!")
                 cont = input("Would you like to play again? ").lower()
@@ -464,33 +552,36 @@ def main():
                 else:
                     moves = 0
                     cleared = 0
+                    flags = number_of_bombs
                     # status = 1
                     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
-        # elif status == 2:
-        #     # if cleared == number_of_safes:
-        #     print_grid(base_grid)
-        #     print("All spaces cleared! You win!")
-        #     cont = input("Would you like to play again? ").lower()
-        #     if cont == "n" or cont == "no":
-        #         continue_game = 0
-        #     else:
-        #         moves = 0
-        #         cleared = 0
-        #         status = 1
-        #         base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-        #         # print_grid(base_grid)
-        
-        if status == 0:
-                cleared = 0
-                cont = input("Would you like to play again? ").lower()
-                if cont == "n" or cont == "no":
-                    continue_game = 0
-                else:
-                    status = 1
-                    moves = 0
-                    # cleared = 0
-                    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+            # elif status == 2:
+            #     # if cleared == number_of_safes:
+            #     print_grid(base_grid)
+            #     print("All spaces cleared! You win!")
+            #     cont = input("Would you like to play again? ").lower()
+            #     if cont == "n" or cont == "no":
+            #         continue_game = 0
+            #     else:
+            #         moves = 0
+            #         cleared = 0
+            #         status = 1
+            #         base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+            #         # print_grid(base_grid)
+            
+            if status == 0:
+                    cleared = 0
+                    # print_grid(base_grid)
+                    cont = input("Would you like to play again? ").lower()
+                    if cont == "n" or cont == "no":
+                        continue_game = 0
+                    else:
+                        status = 1
+                        moves = 0
+                        flags = number_of_bombs
+                        # cleared = 0
+                        base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
 
         
                 # print_grid(base_grid)    

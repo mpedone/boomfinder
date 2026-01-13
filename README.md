@@ -1,10 +1,10 @@
-![Static Badge](https://img.shields.io/badge/Version%200.1-blue)
+![Static Badge](https://img.shields.io/badge/Version%200.2-blue)
 
 # Boomfinder
 A minesweeper-like game
 
 ## It's Playable!
-The game isn't finished, but we can call this version 0.1.
+The game isn't finished, but we can call this version 0.2. Player can now flag spaces and clear regions.
 
 ## Getting Started
 
@@ -19,39 +19,41 @@ cd boomfinder
 ```
 
 #### 2. Run `grid.py`
-
 As noted, this is very unfinished, thus the playable game isn't in `main.py`, nor do I have a shell script to run it yet.
 
 ```shell
 python3 grid.py
 ```
+#### 3. Select Your Move
+The first thing the game will ask is for the player to select a move type. This can be "Reveal" - select a square to see if there's a bomb or not, "Clear" - select an already-revealed spot to clear the adjacent squares (if you've flagged the right number of spaces), or "Flag/Unflag" - mark a square as having a bomb; this square can not be revealed until it is unflagged.
 
-#### 3. Select Your Space
-The game will ask for a row and a column. At the moment, the player cannot change their column selection once they press enter, so choose carefully. The first selection should never be a bomb (if I've done this right!), but after that, all bets are off! The game progresses until the player either chooses a space that has a bomb, or has uncovered all of the spaces. If the player selects a space they've already explored, the game will alert them and ask for another choice. There is no way to mark which spaces have bombs (yet), so you have to keep in mind where the bombs are!
+#### 4. Select Your Space
+The game will ask for a row and a column in the form of `row, column`. The first selection should never be a bomb (if I've done this right!), but after that, all bets are off! The game progresses until the player either chooses a space that has a bomb, or has uncovered all of the spaces. If the player selects a space they've already explored, the game will alert them and ask for another choice. 
 
 ## Customizing the Game
-I've set the game to be a 6x6 grid with 5 bombs, as the CLI can be a little clunky/confusing to play in. If you'd like to tweak the game, and have a text editor, you can open the `grid.py` file and look for the lines:
+Originally, I set the game to be a 6x6 grid with 5 bombs. If you wanted to tweak the game, you needed a text editor to edit `grid.py` file, in the lines:
 
 ```python
-89  board_width = 6
-90  board_height = 6
-91  number_of_bombs = 5
+board_width = 6
+board_height = 6
+number_of_bombs = 5
 ```
-Change those as you see fit.
+
+However, since then, I've added user input to determine the size of the game. At the moment, it only asks when you start the program for the first time, and all continue plays use the same parameters. The defaults are 6x6 with 5 bombs. The max width is 10 and the max height is 40. Anything wider than 10 looks wonky in CLI. 40 is also way too tall, but if you really want a challenge. Max number of bombs is `width x height - 1`.
 
 ## To Come
 My next goal is to give the player the option to set the grid as they see fit, instead of having to edit the code. [done]
 
-Currently working on validating a move. Should be numeric, not already selected, and within the limits of the board.
+Currently working on validating a move. Should be numeric, not already selected, and within the limits of the board. [in progress]
 
 At some point, I need to clean up all the code, organize it better, and create a shell script to simplify running.
 
 Also, more information about game progress.
 
-A way to flag spaces that (the player thinks) have bombs, and have them not be selectable.
+A way to flag spaces that (the player thinks) have bombs, and have them not be selectable. [done]
 
 A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear).
 
-A way to manually clear the surrounding spaces if the correct number of flags have been planted.
+A way to manually clear the surrounding spaces if the correct number of flags have been planted. [in progress]
 
 And, once I get that all working - GRAPHICS!
