@@ -42,19 +42,11 @@ number_of_bombs = 5
 However, since then, I've added user input to determine the size of the game. At the moment, it only asks when you start the program for the first time, and all continue plays use the same parameters. The defaults are 6x6 with 5 bombs. The max width is 10 and the max height is 40. Anything wider than 10 looks wonky in CLI. 40 is also way too tall, but if you really want a challenge. Max number of bombs is `width x height - 1`.
 
 ## To Come
-My next goal is to give the player the option to set the grid as they see fit, instead of having to edit the code. [done]
-
-Currently working on validating a move. Should be numeric, not already selected, and within the limits of the board. [done-ish]
-
 At some point, I need to clean up all the code, organize it better, and create a shell script to simplify running.
 
 Also, more information about game progress. [done-ish]
 
-A way to flag spaces that (the player thinks) have bombs, and have them not be selectable. [done]
-
 A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear). THIS IS WAY MORE COMPLEX THAN I'D THOUGHT IT WOULD BE!
-
-A way to manually clear the surrounding spaces if the correct number of flags have been planted. [done]
 
 A "help" or "instructions" option. I don't think the game is too confusing, but I wrote it, so who knows?
 
