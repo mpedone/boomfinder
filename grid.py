@@ -19,7 +19,6 @@ def bomb_placement(width, height, bomb_count, row, col):
     game_board_x = list(range(height))
     game_board_y = list(range(width))
     board = [(x, y) for x in game_board_x for y in game_board_y]
-    print(board)
     selection = board.index((row, col))
     sel = board.pop(selection)
 

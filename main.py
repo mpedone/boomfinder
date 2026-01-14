@@ -86,7 +86,9 @@ def main():
         if cleared == number_of_safes and status == 1:
             grid.print_grid(base_grid)
             print("All spaces cleared! You win!")
-            cont = input("Would you like to play again? ").lower()
+            cont = ""
+            while cont not in ["y", "n"]:
+                cont = input("Would you like to play again? [y/n] ")[0].lower()
             if cont == "n" or cont == "no":
                 continue_game = 0
             else:
@@ -96,8 +98,10 @@ def main():
                 base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
         if status == 0:
                 cleared = 0
-                cont = input("Would you like to play again? ").lower()
-                if cont == "n" or cont == "no":
+                cont = ""
+                while cont not in ["y", "n"]:
+                    cont = input("Would you like to play again? [y/n] ")[0].lower()
+                if cont == "n":
                     continue_game = 0
                 else:
                     status = 1
