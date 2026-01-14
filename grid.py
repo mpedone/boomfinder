@@ -5,6 +5,7 @@ How to get the bombs in place? Ten arrays of ten integers?
 '''
 import random
 import constants
+import sys
 
 def bomb_placement(width, height, bomb_count, row, col):
     game_board_x = list(range(width))
@@ -177,7 +178,7 @@ def move_selection(base_grid):
         case _:
             print("Look...")
 
-def first_move(row, col):
+def first_move(board_width, board_height, number_of_bombs, base_grid, status=1, moves=0):
     """
     Docstring for first_move
     
@@ -194,9 +195,31 @@ def first_move(row, col):
 
     It is possible that clearing all consecutive blank squares could reveal all safe squares (usually for bigger grids with fewer bombs), so the function needs to check if the user has won.
     """
-    pass
+    # user_input = input("Select a square: ")
+    # row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+    # valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+    valid_move = "start"
+    while valid_move != "":
+        # print(valid_move)
+        user_input = input("Select a square: ")
+        if user_input == "q":
+            sys.exit(1)
+        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+        flag_check = validate_input(row_input, col_input, "other_move", base_grid)
+        if flag_check == "flagged":
+            print("Square already flagged. Unflag it to select it.")
+            return base_grid, status, None, 0, 0
+    player_row, player_col = int(row_input)-1, int(col_input)-1
+    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+    dist_grid = calc_dist(board_width, board_height, bomb_grid)
+    print_grid(dist_grid)
+    base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+    moves += 1
+    cleared = (board_width * board_height) - grid_count(base_grid)
+    return base_grid, status, dist_grid, moves, cleared
 
-def other_move(row, col):
+def other_move(board_width, board_height, base_grid, dist_grid, status, moves):
     """
     Docstring for other_move
     
@@ -215,7 +238,28 @@ def other_move(row, col):
 
     The function must also check whether the revealed square itself is the last safe square, which would result in the user winning.
     """
-    pass
+    valid_move = "continue"
+    while valid_move not in ["valid", "clear"]:
+        # print(valid_move)
+        if valid_move == "flagged":
+            print("Square already flagged. Unflag it to select it.")
+            cleared = (board_width * board_height) - grid_count(base_grid)
+            return base_grid, status, cleared, moves
+        user_input = input("Select a square: ")
+        if user_input == "q":
+            sys.exit(1)
+        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+    player_row, player_col = int(row_input)-1, int(col_input)-1
+    if valid_move == "clear":
+        base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
+        print(f"{status=}")
+        moves += 1
+    else:
+        base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+    moves += 1
+    cleared = (board_width * board_height) - grid_count(base_grid)
+    return base_grid, status, cleared, moves
 
 def mark_square(base_grid, flags):
     """
@@ -447,6 +491,7 @@ def validate_input(row, col, type, base_grid):
         return res
 
 def clear_region(row, col, base_grid, dist_grid, status=1):
+    print(base_grid[row][col])
     if base_grid[row][col] == "_" or base_grid[row][col] == "F":
         print("Invalid selection.")
         return
@@ -691,51 +736,54 @@ def main():
         #     cleared = (board_width * board_height) - grid_count(base_grid)
         
         if selection == "r" or selection == "c":
-            user_input = input("Select a square: ")
-            row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+            # print(f"{moves=}")
+            # user_input = input("Select a square: ")
+            # row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
 
             # if len(moves) < 1:
             if moves == 0:
-                valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+                base_grid, status, bomb_grid, dist_grid, moves, cleared = first_move(board_width, board_height, number_of_bombs, base_grid)
+                # valid_move = validate_input(row_input, col_input, "first_move", base_grid)
 
-                while valid_move != "":
-                    print(valid_move)
-                    user_input = input("Select a square: ")
-                    row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-                    valid_move = validate_input(row_input, col_input, "first_move", base_grid)
-                player_row, player_col = int(row_input)-1, int(col_input)-1
+                # while valid_move != "":
+                #     print(valid_move)
+                #     user_input = input("Select a square: ")
+                #     row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+                #     valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+                # player_row, player_col = int(row_input)-1, int(col_input)-1
                 # move = (player_row, player_col)
-                bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+                # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
                 # print_grid(bomb_grid)
-                dist_grid = calc_dist(board_width, board_height, bomb_grid)
-                print_grid(dist_grid)
+                # dist_grid = calc_dist(board_width, board_height, bomb_grid)
+                # print_grid(dist_grid)
                 # moves.append(move)
-                base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
-                moves += 1
-                cleared = (board_width * board_height) - grid_count(base_grid)
+                # base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+                # moves += 1
+                # cleared = (board_width * board_height) - grid_count(base_grid)
                 # all_cleared_check()
             else:
-                valid_move = validate_input(row_input, col_input, "other_move", base_grid)
-                while valid_move not in ["valid", "clear", "flagged"]:
-                    print(valid_move)
-                    user_input = input("Select a square: ")
-                    row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-                    valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+                base_grid, status, cleared, moves = other_move(board_width, board_height, base_grid, dist_grid, status, moves)
+                # valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+                # while valid_move not in ["valid", "clear", "flagged"]:
+                #     print(valid_move)
+                #     user_input = input("Select a square: ")
+                #     row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+                #     valid_move = validate_input(row_input, col_input, "other_move", base_grid)
                     
-                player_row, player_col = int(row_input)-1, int(col_input)-1
+                # player_row, player_col = int(row_input)-1, int(col_input)-1
 
-                if valid_move == "clear":
-                    base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
-                    print(f"{status=}")
-                    moves += 1
-                elif valid_move == "flagged":
-                    print(f"({row_input}, {col_input}) is flagged, select again.")
-                elif valid_move == "valid":
-                    # move = {player_row, player_col}
-                    # moves.append(move)
-                    base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
-                    moves += 1
-                cleared = (board_width * board_height) - grid_count(base_grid)
+                # if valid_move == "clear":
+                #     base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
+                #     print(f"{status=}")
+                #     moves += 1
+                # elif valid_move == "flagged":
+                #     print(f"({row_input}, {col_input}) is flagged, select again.")
+                # elif valid_move == "valid":
+                #     # move = {player_row, player_col}
+                #     # moves.append(move)
+                #     base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+                #     moves += 1
+                # cleared = (board_width * board_height) - grid_count(base_grid)
                 # if cleared == number_of_safes:
                 #     base_grid, status = check_flags(base_grid, bomb_grid)
             

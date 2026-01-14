@@ -1,10 +1,10 @@
-![Static Badge](https://img.shields.io/badge/Version%200.2-blue)
+![Static Badge](https://img.shields.io/badge/Version%200.9-blue)
 
 # Boomfinder
 A minesweeper-like game
 
 ## It's Playable!
-The game isn't finished, but we can call this version 0.2. Player can now flag spaces and clear regions.
+The game isn't finished, but we can call this version 0.9. Player can now flag spaces and clear regions. I want to fix the input and optimize some of the functions.
 
 ## Getting Started
 
@@ -44,16 +44,16 @@ However, since then, I've added user input to determine the size of the game. At
 ## To Come
 My next goal is to give the player the option to set the grid as they see fit, instead of having to edit the code. [done]
 
-Currently working on validating a move. Should be numeric, not already selected, and within the limits of the board. [in progress]
+Currently working on validating a move. Should be numeric, not already selected, and within the limits of the board. [done-ish]
 
 At some point, I need to clean up all the code, organize it better, and create a shell script to simplify running.
 
-Also, more information about game progress.
+Also, more information about game progress. [done-ish]
 
 A way to flag spaces that (the player thinks) have bombs, and have them not be selectable. [done]
 
-A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear).
+A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear). THIS IS WAY MORE COMPLEX THAN I'D THOUGHT IT WOULD BE!
 
-A way to manually clear the surrounding spaces if the correct number of flags have been planted. [in progress]
+A way to manually clear the surrounding spaces if the correct number of flags have been planted. [done]
 
 And, once I get that all working - GRAPHICS!
