@@ -82,7 +82,8 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
         status = 0
     # elif dist_grid[user_row][user_col] == " ":
     #     base_grid[user_row][user_col] = dist_grid[user_row][user_col]
-    #     auto_clear(user_row, user_col, base_grid, dist_grid)
+    #     clear_region(user_row, user_col, base_grid, dist_grid)
+        # auto_clear(user_row, user_col, base_grid, dist_grid)
     else:
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
         # if base_grid[user_row][user_col] == " ":
@@ -267,7 +268,7 @@ def unmark_square(row, col):
     """
     pass
 
-def clear_region(row, col, base_grid, dist_grid):
+def clear_region_old(row, col, base_grid, dist_grid):
     """
     Docstring for clear_region
     
@@ -445,30 +446,78 @@ def validate_input(row, col, type, base_grid):
         
         return res
 
+def clear_region(row, col, base_grid, dist_grid, status=1):
+    if base_grid[row][col] == "_" or base_grid[row][col] == "F":
+        print("Invalid selection.")
+        return
+    width = len(base_grid[0])-1
+    height = len(base_grid)-1
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    tmp = 1
+
+    flags = count_flags(row, col, base_grid)
+    expected_flags = 0 if base_grid[row][col] == " " else base_grid[row][col]
+
+    if flags != expected_flags:
+        print(f"Not enough flags. (found {flags}, expected {expected_flags})")
+        return base_grid, status
+    else:
+        for dir in directions:
+            new_row = row + dir[0]
+            new_col = col + dir[1]
+
+            if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+                continue
+            elif base_grid[new_row][new_col] != "F":
+                base_grid, status = update_grid(base_grid, dist_grid, new_row, new_col)
+                if status == 0:
+                    tmp = 0
+        if tmp == 0:
+            status = 0
+        return base_grid, status
+    
 def auto_clear(row, col, base_grid, dist_grid):
     width = len(base_grid[0])-1
     height = len(base_grid)-1
     directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    visited = [(row, col)]
+    print(visited)
 
     # while True:
     for dir in directions:
         new_row = row + dir[0]
         new_col = col + dir[1]
+        # print(dir)
+        print((new_row, new_col) in visited)
+
+        if (new_row, new_col) in visited:
+            print(visited)
+            continue
+        else:
+            visited.append((new_row, new_col))
+        print(visited)
 
         if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+            print("bingo")
             continue
+        elif is_corner(new_row, new_col, width, height) or is_edge(new_row, new_col, width, height):
+            return auto_clear(base_grid, dist_grid, new_row, new_col)
         elif dist_grid[new_row][new_col] != " " and base_grid[new_row][new_col] != "F":
-            base_grid[new_row][new_col] = dist_grid[new_row][new_col]
-            break
-            # continue
+            print("bIIngo")
+            return update_grid(base_grid, dist_grid, new_row, new_col)
+            # base_grid[new_row][new_col] = dist_grid[new_row][new_col]
+            continue
+        elif base_grid[new_row][new_col] == "F":
+            continue 
         else:
-            if base_grid[new_row][new_col] != "F":
-                update_grid(base_grid, dist_grid, new_row, new_col)
+            print("bIIIngo!")
+            return auto_clear(base_grid, dist_grid, new_row, new_col)
                 # base_grid[new_row][new_col] = dist_grid[new_row][new_col]
                 # if base_grid[new_row][new_col] != " ":
                 #     continue
             # print(dir)
             # base_grid[new_row][new_col] == " "
+        return
             
 def auto_clear_dep(row, col, base_grid, dist_grid):
     """
@@ -628,6 +677,18 @@ def main():
         if selection == "f":
             flags = mark_square(base_grid, flags)
             # print_grid(base_grid)
+        
+        # if selection == "c" and moves > 0:
+        #     user_input = input("Select a square: ")
+        #     row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        #     while valid_move != "":
+        #         print(valid_move)
+        #         user_input = input("Select a square: ")
+        #         row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        #         valid_move = validate_input(row_input, col_input, "other_move", base_grid)
+        #     player_row, player_col = int(row_input)-1, int(col_input)-1
+        #     clear_region_2(player_row, player_col, base_grid, dist_grid)
+        #     cleared = (board_width * board_height) - grid_count(base_grid)
         
         if selection == "r" or selection == "c":
             user_input = input("Select a square: ")
