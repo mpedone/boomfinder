@@ -178,7 +178,7 @@ def move_selection(base_grid):
         case _:
             print("Look...")
 
-def first_move(board_width, board_height, number_of_bombs, base_grid, status=1, moves=0):
+def first_move(player_row, player_col, board_width, board_height, number_of_bombs, base_grid, status=1, moves=0):
     """
     Docstring for first_move
     
@@ -198,22 +198,22 @@ def first_move(board_width, board_height, number_of_bombs, base_grid, status=1, 
     # user_input = input("Select a square: ")
     # row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
     # valid_move = validate_input(row_input, col_input, "first_move", base_grid)
-    valid_move = "start"
-    while valid_move != "":
-        # print(valid_move)
-        user_input = input("Select a square: ")
-        if user_input == "q":
-            sys.exit(1)
-        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-        valid_move = validate_input(row_input, col_input, "first_move", base_grid)
-        flag_check = validate_input(row_input, col_input, "other_move", base_grid)
-        if flag_check == "flagged":
-            print("Square already flagged. Unflag it to select it.")
-            return base_grid, status, None, 0, 0
-    player_row, player_col = int(row_input)-1, int(col_input)-1
+    # valid_move = "start"
+    # while valid_move != "":
+    #     # print(valid_move)
+    #     user_input = input("Select a square: ")
+    #     if user_input == "q":
+    #         sys.exit(1)
+    #     row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+    #     valid_move = validate_input(row_input, col_input, "first_move", base_grid)
+    #     flag_check = validate_input(row_input, col_input, "other_move", base_grid)
+    #     if flag_check == "flagged":
+    #         print("Square already flagged. Unflag it to select it.")
+    #         return base_grid, status, None, 0, 0
+    # player_row, player_col = int(row_input)-1, int(col_input)-1
     bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
     dist_grid = calc_dist(board_width, board_height, bomb_grid)
-    print_grid(dist_grid)
+    # print_grid(dist_grid)
     base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
     moves += 1
     cleared = (board_width * board_height) - grid_count(base_grid)
@@ -251,7 +251,7 @@ def other_move(board_width, board_height, base_grid, dist_grid, status, moves):
         row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
         valid_move = validate_input(row_input, col_input, "other_move", base_grid)
     player_row, player_col = int(row_input)-1, int(col_input)-1
-    if valid_move == "clear":
+    if move_type == "c":
         base_grid, status = clear_region(player_row, player_col, base_grid, dist_grid)
         print(f"{status=}")
         moves += 1
@@ -261,7 +261,56 @@ def other_move(board_width, board_height, base_grid, dist_grid, status, moves):
     cleared = (board_width * board_height) - grid_count(base_grid)
     return base_grid, status, cleared, moves
 
-def mark_square(base_grid, flags):
+def square_select(base_grid, selection):
+    valid_input = "start"
+    valid = 0
+
+    while valid_input != "":
+        row_err = ""
+        col_err = ""
+        # print(valid_input)
+        user_input = input("Select a square: ")
+        if user_input[0].lower() == "q":
+            sys.exit(1)
+        if "," not in user_input:
+            print("Please format entry as 'row, col'.")
+            continue
+        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+        if not row_input.isnumeric() or int(row_input)-1 not in range(0, len(base_grid)):
+            row_err = f"Row must be a number between 1 and {len(base_grid)}. "
+        if not col_input.isnumeric() or int(col_input)-1 not in range(0, len(base_grid[0])):
+            col_err = f"Col must be a number between 1 and {len(base_grid)}."
+        print(row_err + col_err)
+        if row_err + col_err == "":
+            row_input = int(row_input)-1
+            col_input = int(col_input)-1
+            if selection == "f":
+                if base_grid[row_input][col_input] not in ["_", "F"]:
+                    print("Please select an un-revealed square.")
+                    break
+                else:
+                    valid_input = ""
+            if selection == "c":
+                if base_grid[row_input][col_input] in ["_", "F"]:
+                    print("Please select a revealed square.")
+                    break
+                else:
+                    valid_input = ""
+            if selection == "r":
+                if base_grid[row_input][col_input] == "F":
+                    print("Square already flagged. Unflag it to select it.")
+                    break
+                else:
+                    valid_input = ""
+        else:
+            print(row_err + col_err)
+    
+    if valid_input == "":
+        valid = 1
+
+    return row_input, col_input, valid
+
+def mark_square(user_row, user_col, base_grid, flags):
     """
     Docstring for mark_square
     
@@ -277,16 +326,16 @@ def mark_square(base_grid, flags):
     Using all flags does not trigger an end game check. It just means a user can't place any more flags until they unmark a square. If all squares are marked, this option will only unmark a square.
     """
     # validate_input = "start"
-    user_input = input("Select a square: ")
-    row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-    valid_input = validate_input(row_input, col_input, "mark", base_grid)
-    while valid_input != "":
-        print(valid_input)
-        user_input = input("Select a square: ")
-        row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
-        valid_input = validate_input(row_input, col_input, "mark", base_grid)
+    # user_input = input("Select a square: ")
+    # row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+    # valid_input = validate_input(row_input, col_input, "mark", base_grid)
+    # while valid_input != "":
+    #     print(valid_input)
+    #     user_input = input("Select a square: ")
+    #     row_input, col_input = user_input.split(",")[0], user_input.split(",")[1]
+    #     valid_input = validate_input(row_input, col_input, "mark", base_grid)
 
-    user_row, user_col = int(row_input)-1, int(col_input)-1
+    # user_row, user_col = int(row_input)-1, int(col_input)-1
     if base_grid[user_row][user_col] == "_":
         base_grid[user_row][user_col] = "F"
         flags -= 1
@@ -294,23 +343,6 @@ def mark_square(base_grid, flags):
         base_grid[user_row][user_col] = "_"
         flags += 1
     return flags
-
-def unmark_square(row, col):
-    """
-    Docstring for unmark_square
-    
-    :param row: Row selection
-    :param col: Column selection
-
-    This function unmarks a marked square. This is the only operation that can be done to a marked square.
-
-    Function will need to check that the square is within the board and is marked (if it is marked, it has not been revealed).
-
-    This option should only appear if at least one square has been marked.
-
-    I don't think this is needed, as mark_square() should be able to handle the same functionality.
-    """
-    pass
 
 def clear_region_old(row, col, base_grid, dist_grid):
     """
@@ -491,10 +523,10 @@ def validate_input(row, col, type, base_grid):
         return res
 
 def clear_region(row, col, base_grid, dist_grid, status=1):
-    print(base_grid[row][col])
-    if base_grid[row][col] == "_" or base_grid[row][col] == "F":
-        print("Invalid selection.")
-        return
+    # print(base_grid[row][col])
+    # if base_grid[row][col] == "_" or base_grid[row][col] == "F":
+    #     print("Invalid selection.")
+    #     return
     width = len(base_grid[0])-1
     height = len(base_grid)-1
     directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
@@ -503,7 +535,7 @@ def clear_region(row, col, base_grid, dist_grid, status=1):
     flags = count_flags(row, col, base_grid)
     expected_flags = 0 if base_grid[row][col] == " " else base_grid[row][col]
 
-    if flags != expected_flags:
+    if flags < expected_flags:
         print(f"Not enough flags. (found {flags}, expected {expected_flags})")
         return base_grid, status
     else:
