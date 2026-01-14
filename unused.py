@@ -338,12 +338,12 @@ def first_move(player_row, player_col, board_width, board_height, number_of_bomb
     #         print("Square already flagged. Unflag it to select it.")
     #         return base_grid, status, None, 0, 0
     # player_row, player_col = int(row_input)-1, int(col_input)-1
-    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
-    dist_grid = calc_dist(board_width, board_height, bomb_grid)
+    bomb_grid = grid.bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
+    dist_grid = grid.calc_dist(board_width, board_height, bomb_grid)
     # print_grid(dist_grid)
-    base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
+    base_grid, status = grid.update_grid(base_grid, dist_grid, player_row, player_col)
     moves += 1
-    cleared = (board_width * board_height) - grid_count(base_grid)
+    cleared = (board_width * board_height) - grid.grid_count(base_grid)
     return base_grid, status, dist_grid, moves, cleared
 
 
@@ -408,7 +408,7 @@ def main():
     else:
         number_of_bombs = int(bombs_entry) """
 
-    board_width, board_height, number_of_bombs, number_of_safes = intialize_grid(board_width, board_height)
+    board_width, board_height, number_of_bombs, number_of_safes = grid.intialize_grid(board_width, board_height)
     print(f"BOOMS to avoid: {number_of_bombs}")
     # number_of_safes = board_width * board_height - number_of_bombs
 
@@ -424,7 +424,7 @@ def main():
 
     while continue_game == 1:
         # if status == 1:
-        print_grid(base_grid)
+        grid.print_grid(base_grid)
         print(f"{cleared=}")
         print(f"Flags remaining: {flags}")
 
@@ -506,7 +506,7 @@ def main():
             
             if cleared == number_of_safes and status == 1:
                 # base_grid, status = check_flags(base_grid, bomb_grid)
-                print_grid(base_grid)
+                grid.print_grid(base_grid)
                 print("All spaces cleared! You win!")
                 cont = input("Would you like to play again? ").lower()
                 if cont == "n" or cont == "no":
