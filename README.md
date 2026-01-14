@@ -1,10 +1,10 @@
-![Static Badge](https://img.shields.io/badge/Version%200.9-blue)
+![Static Badge](https://img.shields.io/badge/Version%201.0-blue)
 
 # Boomfinder
 A minesweeper-like game
 
 ## It's Playable!
-The game isn't finished, but we can call this version 0.9. Player can now flag spaces and clear regions. I want to fix the input and optimize some of the functions.
+The game isn't finished, but we can call this version 1.0! Player can now flag spaces and clear regions. I want to optimize some of the functions, but pretty much everything is working! 
 
 ## Getting Started
 
@@ -55,5 +55,7 @@ A way to flag spaces that (the player thinks) have bombs, and have them not be s
 A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear). THIS IS WAY MORE COMPLEX THAN I'D THOUGHT IT WOULD BE!
 
 A way to manually clear the surrounding spaces if the correct number of flags have been planted. [done]
+
+A "help" or "instructions" option. I don't think the game is too confusing, but I wrote it, so who knows?
 
 And, once I get that all working - GRAPHICS!
