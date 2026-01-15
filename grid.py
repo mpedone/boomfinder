@@ -101,8 +101,8 @@ def update_grid(base_grid, dist_grid, user_row, user_col):
 
 def intialize_grid(board_width, board_height):
     print("Let's Find Some BOOMS!")
-
-    width_entry = input("Set the board width: ")
+    
+    width_entry = input("Set the board width (leave blank for default): ")
     if not width_entry.isnumeric():
         print("Invalid entry, using default")
     elif int(width_entry) < 3:
@@ -140,6 +140,7 @@ def intialize_grid(board_width, board_height):
     else:
         number_of_bombs = int(bombs_entry)
     number_of_safes = board_width * board_height - number_of_bombs
+    
     return board_width, board_height, number_of_bombs, number_of_safes
 
 def first_move(player_row, player_col, board_width, board_height, number_of_bombs, base_grid, status=1, moves=0):
@@ -167,6 +168,8 @@ def square_select(base_grid, selection):
         col_err = ""
         # print(valid_input)
         user_input = input("Select a square: ")
+        if input == "":
+            continue
         if user_input[0].lower() == "q":
             sys.exit(1)
         if "," not in user_input:
@@ -355,3 +358,39 @@ def check_flags(base_grid, dist_grid):
             if base_grid[r][c] == "_" and dist_grid[r][c] == "*":
                 base_grid[r][c] = "*"
     return base_grid
+
+def continue_game(new_game, status=1, moves=0, cleared=0, continue_game=1):
+    cont = ""
+    while cont not in ["y", "n"]:
+        cont = input("Would you like to play again? [y/n] ")[0].lower()
+    if cont == "n":
+        continue_game = 0
+    else:
+        reset_game = input("Reset board? [y/n] ")[0].lower()
+        if reset_game == "y":
+            new_game = 1
+        
+    return status, moves, cleared, new_game, continue_game
+
+def instructions():
+    print("""Welcome to BOOMFINDER! Your goal is to reveal all of the 'safe' squares on the board, and avoid all of the BOOMs! To do so, you can take one of 3 actions: 
+1. You can REVEAL an unflagged square.
+2. You can CLEAR a region of squares.
+3. You can FLAG (or unFLAG) a square.
+
+Gameplay:
+1. Choose an action by typing the first letter (case insensetive) and pressing enter.
+2. Next, choose a square by entering its coordinate in the form row, column where "row" and "column" are numbers.
+3. The board will upated to display the result of the move, the number of flags you have remaining (which is also the number of BOOMs to find), the number of spaces you've cleared, and the number of spaces remaining to clear.
+4. The game ends when you either clear all the spaces or reveal a BOOM
+
+Notes:
+On your first turn, you can only REVEAL or FLAG. On all other moves, CLEAR is available.
+
+REVEAL: Reveal shows what is beneath the square - either blank, a number, or a BOOM. The number (or blank) indicates how many BOOMs are in the 8 squares surrounding it. '1' means that there is only 1 BOOM in the surrounding squares. 2 means there are 2, and 8 means that square is fully surrounded by BOOMs! Blank means that there are no bombs in any of the surrounding squares. You cannot reveal a flagged square. Revealing a square that has already been revealed has no effect.
+
+If you find a BOOM, it's game over, so be careful!
+
+FLAG: Flag allows you to mark a square that you suspect has a BOOM beneath it. If you've mistakenly flagged a square, simply use the FLAG move again to unflag the square.
+
+CLEAR: Clear allows to to clear all unrevealed and unflagged squares surrounding a revealed square, but only if you have flagged the correct number of squares. For example, if you choose square (3,4) and the number revealed is '2', you must flag 2 of the surrounding squares before you can use CLEAR on (3,4). CLEAR will reveal all the unflagged squares, so if you flagged correctly, it's a quick way to reveal the board. If you haven't, you'll find a BOOM and the game will be over!""")

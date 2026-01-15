@@ -40,16 +40,24 @@ def main():
     board_width = 6
     board_height = 6
     
-    board_width, board_height, number_of_bombs, number_of_safes = grid.intialize_grid(board_width, board_height)
-    
-    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
     status = 1
     continue_game = 1
+    new_game = 1
     moves = 0
     cleared = 0
-    flags = number_of_bombs
+    
     
     while continue_game == 1:
+
+        if new_game:
+            board_width, board_height, number_of_bombs, number_of_safes = grid.intialize_grid(board_width, board_height)
+            # flags = number_of_bombs
+            new_game = 0
+       
+        if moves == 0:
+            base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+            flags = number_of_bombs
+        
         print("\n")
         grid.print_grid(base_grid)
         print(f"Flags Remaining: {flags}")
@@ -59,14 +67,17 @@ def main():
         selection = None
         print("What type of move would you like to make?")
         if moves == 0:
-            while selection not in ["r", "f", "q"]:
-                selection = input("(R)eveal, (F)lag/Unflag: ")[0].lower()
+            while selection not in ["r", "f", "q", "h"]:
+                selection = input("(R)eveal, (F)lag/Unflag, (H)elp: ")[0].lower()
         else:
-            while selection not in ["r", "c", "f", "q"]:
-                selection = input("(R)eveal, (C)lear, (F)lag/Unflag: ")[0].lower()
+            while selection not in ["r", "c", "f", "q", "h"]:
+                selection = input("(R)eveal, (C)lear, (F)lag/Unflag, (H)elp: ")[0].lower()
         if selection == "q":
             sys.exit(1)
-        
+        if selection == "h":
+            grid.instructions()
+            input("(press enter to continue)")
+            continue
         valid = 0
         user_row, user_col, valid = grid.square_select(base_grid, selection)
         if valid == 0:
@@ -81,33 +92,42 @@ def main():
                 base_grid, status = grid.update_grid(base_grid, dist_grid, user_row, user_col)
         elif selection == "c":
             base_grid, status = grid.clear_region(user_row, user_col, base_grid, dist_grid, status)
-            cleared = (board_width * board_height) - grid.grid_count(base_grid)
+        cleared = (board_width * board_height) - grid.grid_count(base_grid)
 
         if cleared == number_of_safes and status == 1:
+            base_grid = grid.check_flags(base_grid, dist_grid)
             grid.print_grid(base_grid)
             print("All spaces cleared! You win!")
-            cont = ""
+            status = 0
+            """ cont = ""
             while cont not in ["y", "n"]:
                 cont = input("Would you like to play again? [y/n] ")[0].lower()
             if cont == "n" or cont == "no":
                 continue_game = 0
             else:
+                reset_game = input("Reset board? [y/n] ")[0].lower()
+                if reset_game == "y":
+                    new_game = 1
                 moves = 0
                 cleared = 0
                 flags = number_of_bombs
-                base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+                base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """
         if status == 0:
+            status, moves, cleared, new_game, continue_game = grid.continue_game(new_game)
+            """ cont = ""
+            while cont not in ["y", "n"]:
+                cont = input("Would you like to play again? [y/n] ")[0].lower()
+            if cont == "n":
+                continue_game = 0
+            else:
+                reset_game = input("Reset board? [y/n] ")[0].lower()
+                if reset_game == "y":
+                    new_game = 1
+                status = 1
+                moves = 0
                 cleared = 0
-                cont = ""
-                while cont not in ["y", "n"]:
-                    cont = input("Would you like to play again? [y/n] ")[0].lower()
-                if cont == "n":
-                    continue_game = 0
-                else:
-                    status = 1
-                    moves = 0
-                    flags = number_of_bombs
-                    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+                flags = number_of_bombs
+                base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """
 
 
 
