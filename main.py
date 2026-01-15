@@ -63,7 +63,7 @@ def main():
         
         print("\n")
         grid.print_grid(base_grid)
-        print(f"Flags Remaining: {flags}")
+        print(f"\nFlags Remaining: {flags}")
         print(f"Spaces Cleared: {cleared}")
         print(f"Spaces Remaining: {number_of_safes - cleared}\n")
 
