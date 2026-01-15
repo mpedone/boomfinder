@@ -70,4 +70,4 @@ A way to clear swathes of the board (as in the classic game - if you select a sp
 And, once I get that all working - GRAPHICS!
 
 ### Title Graphic
-I've added some ascii art as a title graphic. As my tastes change, I've added a few different versions, with a randomizer to pick one, so each time you run the program, it might be different.
+I've added some ascii art as a title graphic. As my tastes change, I've added a few different versions, with a randomizer to pick one, so each time you run the program, it might be different. I used two websites: [TAAG](https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type+Something+&x=none&v=4&h=4&w=80&we=false) and [Text to ASCII](https://www.asciiart.eu/text-to-ascii-art). I don't think either requires attribution, but I don't feel right *not* giving them credit. *I* didn't take the time to figure this out!
