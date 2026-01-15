@@ -45,7 +45,9 @@ def main():
     new_game = 1
     moves = 0
     cleared = 0
-    
+    grid.title_print()
+
+
     
     while continue_game == 1:
 
@@ -76,7 +78,6 @@ def main():
             sys.exit(1)
         if selection == "h":
             grid.instructions()
-            input("(press enter to continue)")
             continue
         valid = 0
         user_row, user_col, valid = grid.square_select(base_grid, selection)

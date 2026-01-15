@@ -1,9 +1,9 @@
-![Static Badge](https://img.shields.io/badge/Version%201.0-blue)
+![Static Badge](https://img.shields.io/badge/Version%201.1-blue)
 
 # Boomfinder
 A minesweeper-like game
 
-Welcome to BOOMFINDER! Your goal is to reveal all of the 'safe' squares on the board, and avoid all of the BOOMs!
+
 
 ## Getting Started
 
@@ -17,16 +17,21 @@ git clone https://github.com/mpedone/boomfinder.git
 cd boomfinder
 ```
 
-#### 2. Run `main.py`
+## Playing the Game
+### 1. Run `main.py`
 
 ```shell
 python3 main.py
 ```
 
-#### 4. Set up the board
-The program gives you the option to set the height and width of the game board, as well as the number of bombs. If anything other than a number is entered here, the game will revert to its default settings of 6x6 with 4 bombs. If you want to let the game to decide how many bombs to use based on your custom board, leave the third entry blank. There is a math function that will calculate the number of bombs based on the classic Windows version (9x9 with 10 bombs, 16x16 with 40 bombs, and 16x30 with 99 bombs). The max width is 10 (because this is command line, and anything over that gets wonky with the double digits). The max height is 40 (though, again, in command line, this is tough to display). The max number of bombs is `height*width-1`, because you need to be able to select at least one square. Of course, this is a trivial game, as you'll win in one move. Minimum size is 3x3. The minimum number of bombs is 1, because anything less would just be silly.
+### 2. Set up the board
+The program gives you the option to set the height and width of the game board, as well as the number of bombs. If the field is left blank, the game will revert to its default settings of 6x6 with 4 bombs. If you want to let the game to decide how many bombs to use based on your custom board, leave the third entry blank. There is a math function that will calculate the number of bombs based on the classic Windows version (9x9 with 10 bombs, 16x16 with 40 bombs, and 16x30 with 99 bombs). The max width is 10 (because this is command line, and anything over that gets wonky with the double digits). The max height is 40 (though, again, in command line, this is tough to display). The max number of bombs is `height*width-1`, because you need to be able to select at least one square. Of course, this is a trivial game, as you'll win in one move. Minimum size is 3x3. The minimum number of bombs is 1, because anything less would just be silly.
 
-#### 3. Gameplay
+### 3. Gameplay
+Welcome to BOOMFINDER! Your goal is to reveal all of the 'safe' squares on the board, and avoid all of the BOOMs!
+
+To set up the intial game board, select a width (3 - 10), a height (3 - 40), and number of bombs (minimum of 1, max of (width x height)-1). Leave any of these blank to use the default width and height, or to have BOOMFINDER calculate the optimal number of bombs for your grid.
+
 1. Choose an action by typing the first letter (case insensetive) and pressing enter. You can take one of 3 actions: 
     1. You can REVEAL an unflagged square.
     2. You can CLEAR a region of squares.
@@ -48,11 +53,14 @@ CLEAR: Clear allows to to clear all unrevealed and unflagged squares surrounding
 
 When the game ends, you have the option of continuing with the same setup, or resetting the board.
 
-## History
-Version 1.0: Game is fully playable. Starting a new game used the same setup. No help/instructions option.
-Version 1.1: New game allows user option of resetting board. Instructions included as an option.
+Enter 'q' at any time to quit the game.
 
-## To Come
+## Notes
+### Version History
+Version 1.0: Game is fully playable. Starting a new game used the same setup. No help/instructions option.
+Version 1.1: New game allows user option of resetting board. Instructions included as an option. Modified the selections to be more robust. "q" now quits from any selection. "h" brings up the help/instructions from any selection (except the game over selections). Random ascii-art title graphics.
+
+### To Come
 At some point, I need to clean up all the code, organize it better, and create a shell script to simplify running.
 
 Also, more information about game progress. [done-ish]
@@ -60,3 +68,6 @@ Also, more information about game progress. [done-ish]
 A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear). THIS IS WAY MORE COMPLEX THAN I'D THOUGHT IT WOULD BE!
 
 And, once I get that all working - GRAPHICS!
+
+### Title Graphic
+I've added some ascii art as a title graphic. As my tastes change, I've added a few different versions, with a randomizer to pick one, so each time you run the program, it might be different.
