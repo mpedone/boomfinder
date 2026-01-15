@@ -45,13 +45,14 @@ def main():
     new_game = 1
     moves = 0
     cleared = 0
-    grid.title_print()
+    # grid.title_print()
 
 
     
     while continue_game == 1:
 
         if new_game:
+            grid.title_print()
             board_width, board_height, number_of_bombs, number_of_safes = grid.intialize_grid(board_width, board_height)
             # flags = number_of_bombs
             new_game = 0
