@@ -609,3 +609,51 @@ def calc_dist(width, height, bomb_grid):
                 dist_grid[row][col] = "*"
 
     return dist_grid
+
+
+
+
+
+def count_flags_old(row, col, base_grid):
+    if row == 0 and col == 0:
+        x = [base_grid[row][col+1], base_grid[row+1][col], base_grid[row+1][col+1]]
+    elif row == 0 and col == len(base_grid[0])-1:
+        x = [base_grid[row][col-1], base_grid[row+1][col-1], base_grid[row+1][col]]
+    elif row == len(base_grid)-1 and col == 0:
+        x = [base_grid[row-1][col], base_grid[row-1][col+1], base_grid[row][col+1]]
+    elif row == len(base_grid)-1 and col == len(base_grid[0])-1:
+        x = [base_grid[row-1][col-1], base_grid[row-1][col], base_grid[row-1][col-1]]
+    elif row == 0 and col in range(1, len(base_grid[0])-1):
+        x = [base_grid[row][col-1], 
+             base_grid[row][col+1], 
+             base_grid[row+1][col-1], 
+             base_grid[row+1][col], 
+             base_grid[row+1][col+1]]
+    elif row in range(1, len(base_grid)-1) and col == 0:
+        x = [base_grid[row-1][col], 
+             base_grid[row-1][col+1], 
+             base_grid[row][col+1], 
+             base_grid[row+1][col], 
+             base_grid[row+1][col+1]]
+    elif row == len(base_grid)-1 and col in range(1, len(base_grid[0])-1):
+        x = [base_grid[row-1][col-1], 
+             base_grid[row-1][col], 
+             base_grid[row-1][col+1], 
+             base_grid[row][col-1], 
+             base_grid[row][col+1]]
+    elif row in range(1, len(base_grid)-1) and col == len(base_grid[0])-1:
+        x = [base_grid[row-1][col-1], 
+             base_grid[row-1][col], 
+             base_grid[row][col-1], 
+             base_grid[row+1][col-1], 
+             base_grid[row+1][col]]
+    else:
+         x = [base_grid[row-1][col-1], 
+              base_grid[row-1][col], 
+              base_grid[row-1][col+1], 
+              base_grid[row][col-1], 
+              base_grid[row][col+1], 
+              base_grid[row+1][col-1], 
+              base_grid[row+1][col], 
+              base_grid[row+1][col+1]]
+    return x.count("F")

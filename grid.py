@@ -238,48 +238,17 @@ def mark_square(user_row, user_col, base_grid, flags):
     return flags
 
 def count_flags(row, col, base_grid):
-    if row == 0 and col == 0:
-        x = [base_grid[row][col+1], base_grid[row+1][col], base_grid[row+1][col+1]]
-    elif row == 0 and col == len(base_grid[0])-1:
-        x = [base_grid[row][col-1], base_grid[row+1][col-1], base_grid[row+1][col]]
-    elif row == len(base_grid)-1 and col == 0:
-        x = [base_grid[row-1][col], base_grid[row-1][col+1], base_grid[row][col+1]]
-    elif row == len(base_grid)-1 and col == len(base_grid[0])-1:
-        x = [base_grid[row-1][col-1], base_grid[row-1][col], base_grid[row-1][col-1]]
-    elif row == 0 and col in range(1, len(base_grid[0])-1):
-        x = [base_grid[row][col-1], 
-             base_grid[row][col+1], 
-             base_grid[row+1][col-1], 
-             base_grid[row+1][col], 
-             base_grid[row+1][col+1]]
-    elif row in range(1, len(base_grid)-1) and col == 0:
-        x = [base_grid[row-1][col], 
-             base_grid[row-1][col+1], 
-             base_grid[row][col+1], 
-             base_grid[row+1][col], 
-             base_grid[row+1][col+1]]
-    elif row == len(base_grid)-1 and col in range(1, len(base_grid[0])-1):
-        x = [base_grid[row-1][col-1], 
-             base_grid[row-1][col], 
-             base_grid[row-1][col+1], 
-             base_grid[row][col-1], 
-             base_grid[row][col+1]]
-    elif row in range(1, len(base_grid)-1) and col == len(base_grid[0])-1:
-        x = [base_grid[row-1][col-1], 
-             base_grid[row-1][col], 
-             base_grid[row][col-1], 
-             base_grid[row+1][col-1], 
-             base_grid[row+1][col]]
-    else:
-         x = [base_grid[row-1][col-1], 
-              base_grid[row-1][col], 
-              base_grid[row-1][col+1], 
-              base_grid[row][col-1], 
-              base_grid[row][col+1], 
-              base_grid[row+1][col-1], 
-              base_grid[row+1][col], 
-              base_grid[row+1][col+1]]
-    return x.count("F")
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    flags = 0
+    for dir in directions:
+        new_row = row + dir[0]
+        new_col = col + dir[1]
+        if new_row < 0 or new_row >= len(base_grid) or new_col < 0 or new_col >= len(base_grid[0]):
+            continue
+        else:
+            if base_grid[new_row][new_col] == "F":
+                flags += 1
+    return flags
 
 def clear_region(row, col, base_grid, dist_grid, status=1):
     width = len(base_grid[0])-1
@@ -635,7 +604,7 @@ ____/  \___/  \___/  _|  _| _|     ___| _| \_| ____/  _____| _| \_\ """)
 def main():
     board_width, board_height, number_of_bombs = 5, 5, 3
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, 1, 1)
-    dist_grid = calc_dist(board_width, board_height, bomb_grid)
-
+    # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, 1, 1)
+    # dist_grid = calc_dist(board_width, board_height, bomb_grid)
+    
 main()
