@@ -373,14 +373,22 @@ def continue_game(new_game, status=1, moves=0, cleared=0, continue_game=1):
     cont = ""
     reset_game = ""
     while cont not in ["y", "n", "q"]:
-        cont = input("Would you like to play again? [y/n] ")[0].lower()
+        entry = input("Would you like to play again? [y/n] ").lower()
+        try:
+            cont = entry[0]
+        except:
+            continue
     if cont == "n":
         continue_game = 0
     elif cont == "q":
         sys.exit(1)
     else:
         while reset_game not in ["y", "n", "q"]:
-            reset_game = input("Reset board? [y/n] ")[0].lower()
+            reset_entry = input("Reset board? [y/n] ").lower()
+            try:
+                reset_game = reset_entry[0]
+            except:
+                continue
         if reset_game == "q":
             sys.exit(1)
         if reset_game == "y":
