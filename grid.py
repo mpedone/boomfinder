@@ -30,9 +30,18 @@ def bomb_placement(width, height, bomb_count, row, col):
 
 def print_grid(grid):
     width = len(grid[0])
-    first_row_numbers = list(range(width))
-    first_row = "   "
-    first_row += " ".join([str(n+1) for n in first_row_numbers])
+    if width > 10:
+        first_row_numbers = list(range(width))
+        tens_row = "   "
+        tens_row += " ".join([str((n+1)//10) for n in first_row_numbers])
+        tens_row = tens_row.replace("0", " ")
+        first_row = "   "
+        first_row += " ".join([str((n+1)%10) for n in first_row_numbers])
+        print(tens_row)
+    else:
+        first_row_numbers = list(range(width))
+        first_row = "   "
+        first_row += " ".join([str(n+1) for n in first_row_numbers])
 
     print(first_row)
     for i in range(len(grid)):
@@ -602,9 +611,10 @@ ____/  \___/  \___/  _|  _| _|     ___| _| \_| ____/  _____| _| \_\ """)
             return
         
 def main():
-    board_width, board_height, number_of_bombs = 5, 5, 3
+    board_width, board_height, number_of_bombs = 25, 5, 3
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
     # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, 1, 1)
     # dist_grid = calc_dist(board_width, board_height, bomb_grid)
+    print_grid(base_grid)
     
 main()
