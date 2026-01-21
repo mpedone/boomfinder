@@ -575,3 +575,37 @@ def main():
                 player_col = int(input("Select a column: "))-1
                 move = (player_row, player_col)
     """
+    
+def calc_dist(width, height, bomb_grid):
+    dist_grid = [[0 for _ in range(width)] for _ in range(height)]
+    for row in range(len(bomb_grid)):
+        for col in range(len(bomb_grid[row])):
+            # print(f"{row=}, {col=}")
+            if bomb_grid[row][col] == 1:
+                dist_grid[row][col] += 9
+            elif row == 0:
+                if col == 0:
+                    dist_grid[row][col] += (bomb_grid[row][col+1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+                elif col == width - 1:
+                    dist_grid[row][col] += (bomb_grid[row][col-1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col])
+                else:
+                    dist_grid[row][col] += (bomb_grid[row][col-1] + bomb_grid[row][col+1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+            elif row == height - 1:
+                if col == 0:
+                    dist_grid[row][col] += (bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col+1])
+                elif col == width - 1:
+                    dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row][col-1])
+                else:
+                    dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col-1] + bomb_grid[row][col+1])
+            elif col == 0:
+                dist_grid[row][col] += (bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col+1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+            elif col == width - 1:
+                dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row][col-1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col])
+            else:
+                dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col-1] + bomb_grid[row][col+1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+            if dist_grid[row][col] == 0:
+                dist_grid[row][col] = " "
+            elif dist_grid[row][col] == 9:
+                dist_grid[row][col] = "*"
+
+    return dist_grid

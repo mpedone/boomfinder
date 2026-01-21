@@ -47,36 +47,23 @@ def print_grid(grid):
 
 def calc_dist(width, height, bomb_grid):
     dist_grid = [[0 for _ in range(width)] for _ in range(height)]
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     for row in range(len(bomb_grid)):
         for col in range(len(bomb_grid[row])):
-            # print(f"{row=}, {col=}")
             if bomb_grid[row][col] == 1:
                 dist_grid[row][col] += 9
-            elif row == 0:
-                if col == 0:
-                    dist_grid[row][col] += (bomb_grid[row][col+1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
-                elif col == width - 1:
-                    dist_grid[row][col] += (bomb_grid[row][col-1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col])
-                else:
-                    dist_grid[row][col] += (bomb_grid[row][col-1] + bomb_grid[row][col+1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
-            elif row == height - 1:
-                if col == 0:
-                    dist_grid[row][col] += (bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col+1])
-                elif col == width - 1:
-                    dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row][col-1])
-                else:
-                    dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col-1] + bomb_grid[row][col+1])
-            elif col == 0:
-                dist_grid[row][col] += (bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col+1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
-            elif col == width - 1:
-                dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row][col-1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col])
             else:
-                dist_grid[row][col] += (bomb_grid[row-1][col-1] + bomb_grid[row-1][col] + bomb_grid[row-1][col+1] + bomb_grid[row][col-1] + bomb_grid[row][col+1] + bomb_grid[row+1][col-1] + bomb_grid[row+1][col] + bomb_grid[row+1][col+1])
+                for dir in directions:
+                    new_row = row + dir[0]
+                    new_col = col + dir[1]
+                    if new_row < 0 or new_row >= width or new_col < 0 or new_col >= width:
+                        continue
+                    else:
+                        dist_grid[row][col] += bomb_grid[new_row][new_col]
             if dist_grid[row][col] == 0:
                 dist_grid[row][col] = " "
             elif dist_grid[row][col] == 9:
                 dist_grid[row][col] = "*"
-
     return dist_grid
 
 def update_grid(base_grid, dist_grid, user_row, user_col):
@@ -636,3 +623,11 @@ ____/  \___/  \___/  _|  _| _|     ___| _| \_| ____/  _____| _| \_\ """)
             return
         case _:
             return
+        
+def main():
+    board_width, board_height, number_of_bombs = 5, 5, 3
+    base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
+    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, 1, 1)
+    dist_grid = calc_dist(board_width, board_height, bomb_grid)
+
+main()
