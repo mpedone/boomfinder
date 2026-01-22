@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Version%201.1-blue)
+![Static Badge](https://img.shields.io/badge/Version%201.3-blue)
 
 ```python
 >>=========================================================================================================================<<
@@ -72,6 +72,7 @@ Enter 'q' at any time to quit the game.
 ### Version History
 Version 1.0: Game is fully playable. Starting a new game used the same setup. No help/instructions option.
 Version 1.1: New game allows user option of resetting board. Instructions included as an option. Modified the selections to be more robust. "q" now quits from any selection. "h" brings up the help/instructions from any selection (except the game over selections). Random ascii-art title graphics.
+Version 1.2: Clicking on an empty space causes all adjacent empty spaces to clear.
 
 ### Set up the board
 The program gives you the option to set the height and width of the game board, as well as the number of bombs. If the field is left blank, the game will revert to its default settings of 6x6 with 4 bombs. If you want to let the game to decide how many bombs to use based on your custom board, leave the third entry blank. There is a math function that will calculate the number of bombs based on the classic Windows version (9x9 with 10 bombs, 16x16 with 40 bombs, and 16x30 with 99 bombs). The max width is 40 (I'd had set it at 10 originally, but I've since found a way to better display the column numbers - it's not great, but still better). The max height is 40 (though, again, in command line, this is tough to display). The max number of bombs is `height*width-1`, because you need to be able to select at least one square. Of course, this is a trivial game, as you'll win in one move. Minimum size is 3x3. The minimum number of bombs is 1, because anything less would just be silly.
@@ -81,7 +82,9 @@ At some point, I need to clean up all the code, organize it better, and create a
 
 Also, more information about game progress. [done-ish]
 
-A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear). THIS IS WAY MORE COMPLEX THAN I'D THOUGHT IT WOULD BE!
+A way to clear swathes of the board (as in the classic game - if you select a space with no bombs around it, they should all clear). It turns out, this was a little simpler than I was making it. [done]
+
+[new] I've added three functions to handle clearing empty spaces, so I sort of have multiple functions that do roughly the same thing, so I will need to clean that up, but I'm thrilled to have all the functionality finally working!
 
 And, once I get that all working - GRAPHICS!
 

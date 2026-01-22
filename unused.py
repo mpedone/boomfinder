@@ -657,3 +657,119 @@ def count_flags_old(row, col, base_grid):
               base_grid[row+1][col], 
               base_grid[row+1][col+1]]
     return x.count("F")
+
+
+
+"""    
+def auto_clear(row, col, base_grid, dist_grid):
+    width = len(base_grid[0])-1
+    height = len(base_grid)-1
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    visited = [(row, col)]
+    print(visited)
+
+    # while True:
+    for dir in directions:
+        new_row = row + dir[0]
+        new_col = col + dir[1]
+        # print(dir)
+        print((new_row, new_col) in visited)
+
+        if (new_row, new_col) in visited:
+            print(visited)
+            continue
+        else:
+            visited.append((new_row, new_col))
+        print(visited)
+
+        if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+            print("bingo")
+            continue
+        # elif is_corner(new_row, new_col, width, height) or is_edge(new_row, new_col, width, height):
+        #     return auto_clear(base_grid, dist_grid, new_row, new_col)
+        elif dist_grid[new_row][new_col] != " " and base_grid[new_row][new_col] != "F":
+            print("bIIngo")
+            return update_grid(base_grid, dist_grid, new_row, new_col)
+            # base_grid[new_row][new_col] = dist_grid[new_row][new_col]
+            continue
+        elif base_grid[new_row][new_col] == "F":
+            continue 
+        else:
+            print("bIIIngo!")
+            return auto_clear(base_grid, dist_grid, new_row, new_col)
+                # base_grid[new_row][new_col] = dist_grid[new_row][new_col]
+                # if base_grid[new_row][new_col] != " ":
+                #     continue
+            # print(dir)
+            # base_grid[new_row][new_col] == " "
+        return
+ """
+
+
+
+def auto_clear(row, col, base_grid, dist_grid, status, moves):
+    width = len(base_grid[0])-1
+    height = len(base_grid)-1
+    # cleared = []
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    for dir in directions:
+        # cleared.append((row,col))
+        new_row = row + dir[0]
+        new_col = col + dir[1]
+        if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+            continue
+        if (new_row, new_col) in moves:
+            continue
+        if dist_grid[new_row][new_col] != " ":
+            base_grid, status = grid.update_grid(base_grid, dist_grid, new_row, new_col)
+            # cleared.append((new_row, new_col))
+            return base_grid, status
+        else:
+            base_grid, status = auto_clear(new_row, new_col, base_grid, dist_grid, status)
+
+
+    # if dist_grid[row][col] != " " or base_grid[row][col] == " " or base_grid[row][col] == "F":
+    #     return dist_grid[row][col], status
+    # else:
+    #     for dir in directions:
+    #         new_row = row + dir[0]
+    #         new_col = col + dir[1]
+    #         if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+    #             continue
+    #         elif dist_grid[new_row][new_col] != " " or base_grid[new_row][new_col] == " " or base_grid[new_row][new_col] == "F":
+    #             return base_grid, status
+    #         elif base_grid[new_row][new_col] == "F":
+    #             continue
+    #         else:
+    #             base_grid, status = update_grid(base_grid, dist_grid, new_row, new_col)
+    # return base_grid, status 
+
+""" cont = ""
+            while cont not in ["y", "n"]:
+                cont = input("Would you like to play again? [y/n] ")[0].lower()
+            if cont == "n" or cont == "no":
+                continue_game = 0
+            else:
+                reset_game = input("Reset board? [y/n] ")[0].lower()
+                if reset_game == "y":
+                    new_game = 1
+                moves = 0
+                cleared = 0
+                flags = number_of_bombs
+                base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """
+                
+
+""" cont = ""
+while cont not in ["y", "n"]:
+    cont = input("Would you like to play again? [y/n] ")[0].lower()
+if cont == "n":
+    continue_game = 0
+else:
+    reset_game = input("Reset board? [y/n] ")[0].lower()
+    if reset_game == "y":
+        new_game = 1
+    status = 1
+    moves = 0
+    cleared = 0
+    flags = number_of_bombs
+    base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """

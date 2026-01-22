@@ -14,11 +14,8 @@ def main():
     cleared = 0
     moves_count = 0
     # grid.title_print()
-
-
     
     while continue_game == 1:
-
         if new_game:
             grid.title_print()
             board_width, board_height, number_of_bombs, number_of_safes = grid.intialize_grid(board_width, board_height)
@@ -73,40 +70,12 @@ def main():
             grid.print_grid(base_grid)
             print("All spaces cleared! You win!")
             status = 0
-            """ cont = ""
-            while cont not in ["y", "n"]:
-                cont = input("Would you like to play again? [y/n] ")[0].lower()
-            if cont == "n" or cont == "no":
-                continue_game = 0
-            else:
-                reset_game = input("Reset board? [y/n] ")[0].lower()
-                if reset_game == "y":
-                    new_game = 1
-                moves = 0
-                cleared = 0
-                flags = number_of_bombs
-                base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """
+            
         if status == 0:
             moves = []
             moves_count = 0
             cleared = 0
             status, new_game, continue_game = grid.continue_game(new_game)
-            """ cont = ""
-            while cont not in ["y", "n"]:
-                cont = input("Would you like to play again? [y/n] ")[0].lower()
-            if cont == "n":
-                continue_game = 0
-            else:
-                reset_game = input("Reset board? [y/n] ")[0].lower()
-                if reset_game == "y":
-                    new_game = 1
-                status = 1
-                moves = 0
-                cleared = 0
-                flags = number_of_bombs
-                base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """
-
-
 
 if __name__ == "__main__":
     main()
