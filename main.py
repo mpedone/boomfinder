@@ -10,8 +10,9 @@ def main():
     status = 1
     continue_game = 1
     new_game = 1
-    moves = 0
+    moves = []
     cleared = 0
+    moves_count = 0
     # grid.title_print()
 
 
@@ -24,19 +25,20 @@ def main():
             # flags = number_of_bombs
             new_game = 0
        
-        if moves == 0:
+        if moves_count == 0: # moves == 0
             base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
             flags = number_of_bombs
         
         print("\n")
         grid.print_grid(base_grid)
+        # print(f"loop {moves=}")
         print(f"\nFlags Remaining: {flags}")
         print(f"Spaces Cleared: {cleared}")
         print(f"Spaces Remaining: {number_of_safes - cleared}\n")
 
         selection = None
         print("What type of move would you like to make?")
-        if moves == 0:
+        if moves == []: # moves == 0
             while selection not in ["r", "f", "q", "h"]:
                 selection = input("(R)eveal, (F)lag/Unflag, (H)elp: ")[0].lower()
         else:
@@ -55,12 +57,15 @@ def main():
         if selection == "f":
             flags = grid.mark_square(user_row, user_col, base_grid, flags)
         elif selection == "r": # or selection == "c":
-            if moves == 0:
-                base_grid, status, dist_grid, moves, cleared = grid.first_move(user_row, user_col, board_width, board_height, number_of_bombs, base_grid)
+            if moves == []: # moves == 0
+                base_grid, status, dist_grid, moves, cleared = grid.first_move(user_row, user_col, board_width, board_height, number_of_bombs, base_grid, moves)
+                moves_count += 1
             else:
-                base_grid, status = grid.update_grid(base_grid, dist_grid, user_row, user_col)
+                base_grid, status, moves = grid.update_grid(base_grid, dist_grid, user_row, user_col, moves)
+                moves_count += 1
         elif selection == "c":
-            base_grid, status = grid.clear_region(user_row, user_col, base_grid, dist_grid, status)
+            base_grid, status, moves = grid.clear_region(user_row, user_col, base_grid, dist_grid, moves, status)
+            moves_count += 1
         cleared = (board_width * board_height) - grid.grid_count(base_grid)
 
         if cleared == number_of_safes and status == 1:
@@ -82,7 +87,10 @@ def main():
                 flags = number_of_bombs
                 base_grid = [['_' for x in range(board_width)] for y in range(board_height)] """
         if status == 0:
-            status, moves, cleared, new_game, continue_game = grid.continue_game(new_game)
+            moves = []
+            moves_count = 0
+            cleared = 0
+            status, new_game, continue_game = grid.continue_game(new_game)
             """ cont = ""
             while cont not in ["y", "n"]:
                 cont = input("Would you like to play again? [y/n] ")[0].lower()

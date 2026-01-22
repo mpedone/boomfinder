@@ -65,7 +65,7 @@ def calc_dist(width, height, bomb_grid):
                 for dir in directions:
                     new_row = row + dir[0]
                     new_col = col + dir[1]
-                    if new_row < 0 or new_row >= width or new_col < 0 or new_col >= width:
+                    if new_row < 0 or new_row >= height or new_col < 0 or new_col >= width:
                         continue
                     else:
                         dist_grid[row][col] += bomb_grid[new_row][new_col]
@@ -75,25 +75,22 @@ def calc_dist(width, height, bomb_grid):
                 dist_grid[row][col] = "*"
     return dist_grid
 
-def update_grid(base_grid, dist_grid, user_row, user_col):
+def update_grid(base_grid, dist_grid, user_row, user_col, moves):
     status = 1
     if base_grid[user_row][user_col] == "F":
         pass
     elif dist_grid[user_row][user_col] == "*":
         check_flags(base_grid, dist_grid)
         print_grid(base_grid)
-        # print_grid(dist_grid)
         print("You hit a BOOM! Game over!")
         status = 0
     # elif dist_grid[user_row][user_col] == " ":
-    #     base_grid[user_row][user_col] = dist_grid[user_row][user_col]
-    #     clear_region(user_row, user_col, base_grid, dist_grid)
-        # auto_clear(user_row, user_col, base_grid, dist_grid)
+    #     base_grid[user_row][user_col] = " "
+    #     base_grid, status, moves = clear_region(user_row, user_col, base_grid, dist_grid, moves)
     else:
+        moves.append((user_row, user_col))
         base_grid[user_row][user_col] = dist_grid[user_row][user_col]
-        # if base_grid[user_row][user_col] == " ":
-        #     auto_clear(user_row, user_col, base_grid, dist_grid)
-    return base_grid, status
+    return base_grid, status, moves
 
 def intialize_grid(board_width, board_height):
     print("Let's Find Some BOOMS!")
@@ -162,7 +159,7 @@ def intialize_grid(board_width, board_height):
     
     return board_width, board_height, number_of_bombs, number_of_safes
 
-def first_move(player_row, player_col, board_width, board_height, number_of_bombs, base_grid, status=1, moves=0):
+def first_move(player_row, player_col, board_width, board_height, number_of_bombs, base_grid, moves, status=1):
     """
     Docstring for first_move
     
@@ -173,8 +170,7 @@ def first_move(player_row, player_col, board_width, board_height, number_of_bomb
     """
     bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, player_row, player_col)
     dist_grid = calc_dist(board_width, board_height, bomb_grid)
-    base_grid, status = update_grid(base_grid, dist_grid, player_row, player_col)
-    moves += 1
+    base_grid, status, moves = update_grid(base_grid, dist_grid, player_row, player_col, moves)
     cleared = (board_width * board_height) - grid_count(base_grid)
     return base_grid, status, dist_grid, moves, cleared
 
@@ -259,18 +255,57 @@ def count_flags(row, col, base_grid):
                 flags += 1
     return flags
 
-def clear_region(row, col, base_grid, dist_grid, status=1):
+def auto_clear(row, col, base_grid, dist_grid, status):
+    width = len(base_grid[0])-1
+    height = len(base_grid)-1
+    cleared = []
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    for dir in directions:
+        cleared.append((row,col))
+        new_row = row + dir[0]
+        new_col = col + dir[1]
+        if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+            continue
+        if (new_row, new_col) in cleared:
+            continue
+        if dist_grid[new_row][new_col] != " ":
+            base_grid, status = update_grid(base_grid, dist_grid, new_row, new_col)
+            # cleared.append((new_row, new_col))
+            return base_grid, status
+        else:
+            base_grid, status = auto_clear(new_row, new_col, base_grid, dist_grid, status)
+
+
+    # if dist_grid[row][col] != " " or base_grid[row][col] == " " or base_grid[row][col] == "F":
+    #     return dist_grid[row][col], status
+    # else:
+    #     for dir in directions:
+    #         new_row = row + dir[0]
+    #         new_col = col + dir[1]
+    #         if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
+    #             continue
+    #         elif dist_grid[new_row][new_col] != " " or base_grid[new_row][new_col] == " " or base_grid[new_row][new_col] == "F":
+    #             return base_grid, status
+    #         elif base_grid[new_row][new_col] == "F":
+    #             continue
+    #         else:
+    #             base_grid, status = update_grid(base_grid, dist_grid, new_row, new_col)
+    # return base_grid, status 
+
+def clear_region(row, col, base_grid, dist_grid, moves, status=1):
     width = len(base_grid[0])-1
     height = len(base_grid)-1
     directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     tmp = 1
 
     flags = count_flags(row, col, base_grid)
-    expected_flags = 0 if base_grid[row][col] == " " else base_grid[row][col]
+    expected_flags = 0 if dist_grid[row][col] == " " else dist_grid[row][col]
 
     if flags < expected_flags:
         print(f"Not enough flags. (found {flags}, expected {expected_flags})")
-        return base_grid, status
+        return base_grid, status, moves
+    # elif dist_grid[row][col] != " ":
+    #     return base_grid, status, moves
     else:
         for dir in directions:
             new_row = row + dir[0]
@@ -278,13 +313,16 @@ def clear_region(row, col, base_grid, dist_grid, status=1):
 
             if new_row < 0 or new_row > height or new_col < 0 or new_col > width:
                 continue
+            elif (new_row, new_col) in moves:
+                continue
             elif base_grid[new_row][new_col] != "F":
-                base_grid, status = update_grid(base_grid, dist_grid, new_row, new_col)
+                # moves.append((new_row, new_col))
+                base_grid, status, moves = update_grid(base_grid, dist_grid, new_row, new_col, moves)
                 if status == 0:
                     tmp = 0
         if tmp == 0:
             status = 0
-        return base_grid, status
+        return base_grid, status, moves
 
 """    
 def auto_clear(row, col, base_grid, dist_grid):
@@ -347,7 +385,7 @@ def check_flags(base_grid, dist_grid):
                 base_grid[r][c] = "*"
     return base_grid
 
-def continue_game(new_game, status=1, moves=0, cleared=0, continue_game=1):
+def continue_game(new_game, status=1, continue_game=1):
     cont = ""
     reset_game = ""
     while cont not in ["y", "n", "q"]:
@@ -372,7 +410,7 @@ def continue_game(new_game, status=1, moves=0, cleared=0, continue_game=1):
         if reset_game == "y":
             new_game = 1
         
-    return status, moves, cleared, new_game, continue_game
+    return status, new_game, continue_game
 
 def instructions():
     print("""Welcome to BOOMFINDER! Your goal is to reveal all of the 'safe' squares on the board, and avoid all of the BOOMs!
@@ -610,11 +648,31 @@ ____/  \___/  \___/  _|  _| _|     ___| _| \_| ____/  _____| _| \_\ """)
         case _:
             return
         
+def reveal_square(row, col, base_grid, dist_grid):
+    base_grid[row][col] = dist_grid[row][col]
+    return base_grid
+
+def reveal_region(row, col, base_grid, dist_grid):
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+
+def is_on_board(row, col, width, height):
+    return row >= 0 and row < height and col >= 0 and col < width
+
+
 def main():
-    board_width, board_height, number_of_bombs = 25, 5, 3
+    board_width, board_height, number_of_bombs = 5, 5, 3
     base_grid = [['_' for x in range(board_width)] for y in range(board_height)]
-    # bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, 1, 1)
+    bomb_grid = bomb_placement(board_width, board_height, number_of_bombs, 1, 1)
     # dist_grid = calc_dist(board_width, board_height, bomb_grid)
-    print_grid(base_grid)
+    dist_grid = [[" ", "1", "1", "1", "1"],[" ", "1", "1", "1", "1"],[" ", "1", "1", "1", "1"],[" ", "1", "1", "1", "1"],[" ", " ", " ", " ", " "]]
     
-main()
+    print_grid(dist_grid)
+    print_grid(base_grid)
+    # base_grid, status = clear_region(1, 1, base_grid, dist_grid)
+    # base_grid, status = update_grid(base_grid, dist_grid, 0, 0)
+    base_grid = reveal_square(1, 1, base_grid, dist_grid)
+    print_grid(base_grid)
+
+if __name__ == "__main__":
+    main()
